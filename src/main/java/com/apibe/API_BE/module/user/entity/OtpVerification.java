@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "otp_verification")
+@Table(name = "otp_verifications")
 public class OtpVerification {
 
     @Id

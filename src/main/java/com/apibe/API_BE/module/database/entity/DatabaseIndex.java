@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "database_index")
+@Table(name = "database_indexes")
 public class DatabaseIndex {
 
     @Id

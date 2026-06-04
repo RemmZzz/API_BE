@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "password_reset_token")
+@Table(name = "password_reset_tokens")
 public class PasswordResetToken {
 
     @Id
