@@ -1,5 +1,6 @@
 package com.apibe.API_BE.module.user.dto.request;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter
@@ -9,6 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 public class UpdateSettingRequest {
 
-    private String placeholder;
+    @Pattern(regexp = "^(vi|en)$", message = "Ngôn ngữ không hợp lệ")
+    private String language;
+    private String notificationSettings;
+    private String privacySettings;
 }
-

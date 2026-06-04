@@ -9,4 +9,7 @@
     hibernate:
       ddl-auto: validate
     show-sql: false
-
+    properties:
+      hibernate:
+        type:
+          preferred_uuid_jdbc_type: CHAR

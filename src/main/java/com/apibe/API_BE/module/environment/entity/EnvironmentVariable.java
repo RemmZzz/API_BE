@@ -1,6 +1,5 @@
-package com.apibe.API_BE.module.project.entity;
+package com.apibe.API_BE.module.environment.entity;
 
-import com.apibe.API_BE.global.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,32 +12,34 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "projects")
-public class Project {
+@Table(name = "environment_variables")
+public class EnvironmentVariable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
-    @Column(name = "owner_id", columnDefinition = "CHAR(36)", nullable = false)
-    private UUID ownerId;
+    @Column(name = "environment_id", columnDefinition = "CHAR(36)", nullable = false)
+    private UUID environmentId;
 
-    @Column(name = "name", nullable = false, length = 150)
-    private String name;
+    @Column(name = "variable_key", nullable = false, length = 100)
+    private String variableKey;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "initial_value")
+    private String initialValue;
+
+    @Column(name = "current_value")
+    private String currentValue;
 
     @Column(name = "type", length = 50)
     private String type;
 
-    @Column(name = "color", length = 30)
-    private String color;
+    @Column(name = "is_enabled", nullable = false)
+    private boolean isEnabled;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private ProjectStatus status;
+    @Column(name = "is_secret", nullable = false)
+    private boolean isSecret;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -51,8 +52,8 @@ public class Project {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
-        if (this.status == null) {
-            this.status = ProjectStatus.ACTIVE;
+        if (this.type == null) {
+            this.type = "default";
         }
     }
 

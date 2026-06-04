@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings({"SqlResolve", "SqlNoDataSourceInspection"})
 public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
 
     @Query(value = "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status IN ('PAID', 'SUCCESS')", nativeQuery = true)

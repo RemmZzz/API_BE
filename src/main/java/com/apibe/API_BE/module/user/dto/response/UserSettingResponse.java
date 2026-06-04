@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class UserSettingResponse {
 
-    private String placeholder;
+    private String language;
+    private String notificationSettings;
+    private String privacySettings;
 }
-

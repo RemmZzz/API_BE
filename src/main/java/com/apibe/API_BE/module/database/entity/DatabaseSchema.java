@@ -20,6 +20,15 @@ public class DatabaseSchema {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
+    @Column(name = "project_id", columnDefinition = "CHAR(36)", nullable = false)
+    private UUID projectId;
+
+    @Column(name = "db_type", nullable = false, length = 50)
+    private String dbType;
+
+    @Column(name = "name", length = 150)
+    private String name;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -31,6 +40,12 @@ public class DatabaseSchema {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.dbType == null) {
+            this.dbType = "mysql";
+        }
+        if (this.name == null) {
+            this.name = "default_schema";
+        }
     }
 
     @PreUpdate
@@ -38,4 +53,3 @@ public class DatabaseSchema {
         this.updatedAt = LocalDateTime.now();
     }
 }
-
