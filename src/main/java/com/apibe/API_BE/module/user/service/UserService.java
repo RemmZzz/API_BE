@@ -9,6 +9,8 @@ import com.apibe.API_BE.module.user.entity.User;
 import com.apibe.API_BE.module.user.entity.UserSetting;
 import com.apibe.API_BE.module.user.repository.UserRepository;
 import com.apibe.API_BE.module.user.repository.UserSettingRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +21,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserSettingRepository userSettingRepository;
+    private final ObjectMapper objectMapper;
 
-    public UserService(UserRepository userRepository, UserSettingRepository userSettingRepository) {
+    public UserService(UserRepository userRepository, UserSettingRepository userSettingRepository, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.userSettingRepository = userSettingRepository;
+        this.objectMapper = objectMapper;
     }
 
     public UserSettingResponse getUserSetting() {
@@ -31,8 +35,8 @@ public class UserService {
 
         return UserSettingResponse.builder()
                 .language(setting.getLanguage())
-                .notificationSettings(setting.getNotificationSettings())
-                .privacySettings(setting.getPrivacySettings())
+                .notificationSettings(parseJson(setting.getNotificationSettings()))
+                .privacySettings(parseJson(setting.getPrivacySettings()))
                 .build();
     }
 
@@ -45,18 +49,18 @@ public class UserService {
             setting.setLanguage(request.getLanguage());
         }
         if (request.getNotificationSettings() != null) {
-            setting.setNotificationSettings(request.getNotificationSettings());
+            setting.setNotificationSettings(toJsonString(request.getNotificationSettings()));
         }
         if (request.getPrivacySettings() != null) {
-            setting.setPrivacySettings(request.getPrivacySettings());
+            setting.setPrivacySettings(toJsonString(request.getPrivacySettings()));
         }
 
         userSettingRepository.saveAndFlush(setting);
 
         return UserSettingResponse.builder()
                 .language(setting.getLanguage())
-                .notificationSettings(setting.getNotificationSettings())
-                .privacySettings(setting.getPrivacySettings())
+                .notificationSettings(parseJson(setting.getNotificationSettings()))
+                .privacySettings(parseJson(setting.getPrivacySettings()))
                 .build();
     }
 
@@ -74,5 +78,30 @@ public class UserService {
 
             return userSettingRepository.saveAndFlush(newSetting);
         });
+    }
+
+    private Object parseJson(String jsonStr) {
+        if (jsonStr == null || jsonStr.isEmpty()) {
+            return null;
+        }
+        try {
+            return objectMapper.readTree(jsonStr);
+        } catch (JsonProcessingException e) {
+            return jsonStr;
+        }
+    }
+
+    private String toJsonString(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof String stringVal) {
+            return stringVal;
+        }
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            return "{}";
+        }
     }
 }

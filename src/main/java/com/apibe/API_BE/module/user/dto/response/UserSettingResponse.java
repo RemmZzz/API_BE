@@ -10,6 +10,6 @@ import lombok.*;
 public class UserSettingResponse {
 
     private String language;
-    private String notificationSettings;
-    private String privacySettings;
+    private Object notificationSettings;
+    private Object privacySettings;
 }

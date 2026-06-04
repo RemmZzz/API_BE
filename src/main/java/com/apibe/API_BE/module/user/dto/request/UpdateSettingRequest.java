@@ -12,6 +12,6 @@ public class UpdateSettingRequest {
 
     @Pattern(regexp = "^(vi|en)$", message = "Ngôn ngữ không hợp lệ")
     private String language;
-    private String notificationSettings;
-    private String privacySettings;
+    private Object notificationSettings;
+    private Object privacySettings;
 }
