@@ -32,6 +32,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class AdminServiceImpl implements AdminService {
 
     private static final Set<String> USER_SORT_FIELDS = Set.of(

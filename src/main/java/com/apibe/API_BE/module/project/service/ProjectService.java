@@ -41,6 +41,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@SuppressWarnings("null")
 public class ProjectService {
 
     private final ProjectRepository projectRepository;

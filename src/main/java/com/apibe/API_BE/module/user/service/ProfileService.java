@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
+@SuppressWarnings("null")
 public class ProfileService {
 
     private final UserRepository userRepository;

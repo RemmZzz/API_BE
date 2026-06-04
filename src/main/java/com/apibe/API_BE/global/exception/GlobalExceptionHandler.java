@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(errorCode.getStatus()).body(response);
+        return ResponseEntity.status(errorCode.getStatus().value()).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus()).body(response);
+        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus().value()).body(response);
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus()).body(response);
+        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus().value()).body(response);
     }
 
     @ExceptionHandler(Exception.class)

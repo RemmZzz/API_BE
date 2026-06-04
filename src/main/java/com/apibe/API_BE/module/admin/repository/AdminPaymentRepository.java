@@ -31,7 +31,7 @@ public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
             WHERE created_at BETWEEN :fromDate AND :toDate
               AND status IN ('PAID', 'SUCCESS')
               AND (:status IS NULL OR status = :status)
-              AND (:cycle IS NULL OR cycle = :cycle)
+              AND (:cycle IS NULL OR `cycle` = :cycle)
             """, nativeQuery = true)
     BigDecimal sumSuccessfulRevenueByFilters(
             @Param("fromDate") LocalDateTime fromDate,
@@ -45,7 +45,7 @@ public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
             FROM payments
             WHERE created_at BETWEEN :fromDate AND :toDate
               AND (:status IS NULL OR status = :status)
-              AND (:cycle IS NULL OR cycle = :cycle)
+              AND (:cycle IS NULL OR `cycle` = :cycle)
             """, nativeQuery = true)
     long countByFilters(
             @Param("fromDate") LocalDateTime fromDate,
@@ -60,7 +60,7 @@ public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
             WHERE created_at BETWEEN :fromDate AND :toDate
               AND status IN ('PAID', 'SUCCESS')
               AND (:status IS NULL OR status = :status)
-              AND (:cycle IS NULL OR cycle = :cycle)
+              AND (:cycle IS NULL OR `cycle` = :cycle)
             """, nativeQuery = true)
     long countSuccessByFilters(
             @Param("fromDate") LocalDateTime fromDate,
@@ -75,7 +75,7 @@ public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
             WHERE created_at BETWEEN :fromDate AND :toDate
               AND status = :targetStatus
               AND (:status IS NULL OR status = :status)
-              AND (:cycle IS NULL OR cycle = :cycle)
+              AND (:cycle IS NULL OR `cycle` = :cycle)
             """, nativeQuery = true)
     long countStatusByFilters(
             @Param("fromDate") LocalDateTime fromDate,
@@ -96,7 +96,7 @@ public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
             FROM payments
             WHERE created_at BETWEEN :fromDate AND :toDate
               AND (:status IS NULL OR status = :status)
-              AND (:cycle IS NULL OR cycle = :cycle)
+              AND (:cycle IS NULL OR `cycle` = :cycle)
             GROUP BY period
             ORDER BY period ASC
             """, nativeQuery = true)
@@ -114,14 +114,14 @@ public interface AdminPaymentRepository extends JpaRepository<Payment, UUID> {
                     FROM payments
                     WHERE created_at BETWEEN :fromDate AND :toDate
                       AND (:status IS NULL OR status = :status)
-                      AND (:cycle IS NULL OR cycle = :cycle)
+                      AND (:cycle IS NULL OR `cycle` = :cycle)
                     """,
             countQuery = """
                     SELECT COUNT(*)
                     FROM payments
                     WHERE created_at BETWEEN :fromDate AND :toDate
                       AND (:status IS NULL OR status = :status)
-                      AND (:cycle IS NULL OR cycle = :cycle)
+                      AND (:cycle IS NULL OR `cycle` = :cycle)
                     """,
             nativeQuery = true
     )
