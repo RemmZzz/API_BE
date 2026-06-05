@@ -1,6 +1,5 @@
-package com.apibe.API_BE.module.project.entity;
+package com.apibe.API_BE.module.collection.entity;
 
-import com.apibe.API_BE.global.enums.MemberRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,24 +12,26 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "project_members")
-public class ProjectMember {
+@Table(name = "collection_folders")
+public class CollectionFolder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
-    @Column(name = "project_id", nullable = false, columnDefinition = "CHAR(36)")
-    private UUID projectId;
+    @Column(name = "collection_id", nullable = false, columnDefinition = "CHAR(36)")
+    private UUID collectionId;
 
-    @Column(name = "user_id", nullable = false, columnDefinition = "CHAR(36)")
-    private UUID userId;
+    @Column(name = "parent_folder_id", columnDefinition = "CHAR(36)")
+    private UUID parentFolderId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 255)
+    private String name;
+
+    @Column(name = "sort_order", nullable = false)
     @Builder.Default
-    private MemberRole role = MemberRole.MEMBER;
+    private Integer sortOrder = 0;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

@@ -1,5 +1,7 @@
 package com.apibe.API_BE.module.user.entity;
 
+import com.apibe.API_BE.global.enums.UserRole;
+import com.apibe.API_BE.global.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,13 +14,38 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
+
+    @Column(name = "username", nullable = false, unique = true, length = 100)
+    private String username;
+
+    @Column(name = "email", nullable = false, unique = true, length = 255)
+    private String email;
+
+    @Column(name = "password", length = 255)
+    private String password;
+
+    @Column(name = "full_name", length = 255)
+    private String fullName;
+
+    @Column(name = "avatar_url", length = 512)
+    private String avatarUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 50)
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 50)
+    @Builder.Default
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -38,4 +65,3 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 }
-
