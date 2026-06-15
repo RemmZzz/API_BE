@@ -20,6 +20,7 @@ public class ApiDocumentationEndpointResponse {
     private String bodyExample;
     private String responseExample;
     private String errorExample;
+    private int ordinalPosition;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

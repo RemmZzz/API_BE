@@ -1,158 +1,143 @@
--- Align users table with constraints and types
-ALTER TABLE users MODIFY COLUMN username VARCHAR(50) NOT NULL;
-ALTER TABLE users MODIFY COLUMN email VARCHAR(255) NOT NULL;
-ALTER TABLE users ADD CONSTRAINT uk_users_username UNIQUE (username);
-ALTER TABLE users ADD CONSTRAINT uk_users_email UNIQUE (email);
-ALTER TABLE users MODIFY COLUMN role ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER';
-ALTER TABLE users MODIFY COLUMN status ENUM('ACTIVE', 'INACTIVE', 'BANNED', 'PENDING') NOT NULL DEFAULT 'PENDING';
-
--- Align user_settings table
-ALTER TABLE user_settings ADD COLUMN user_id CHAR(36) NOT NULL UNIQUE;
-ALTER TABLE user_settings ADD COLUMN language VARCHAR(10) NOT NULL DEFAULT 'vi';
-ALTER TABLE user_settings ADD COLUMN notification_settings JSON NULL;
-ALTER TABLE user_settings ADD COLUMN privacy_settings JSON NULL;
-ALTER TABLE user_settings ADD CONSTRAINT fk_user_settings_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
--- Align projects table
-ALTER TABLE projects MODIFY COLUMN owner_id CHAR(36) NOT NULL;
-ALTER TABLE projects MODIFY COLUMN name VARCHAR(150) NOT NULL;
-ALTER TABLE projects ADD COLUMN description TEXT NULL;
-ALTER TABLE projects ADD COLUMN type VARCHAR(50) NULL;
-ALTER TABLE projects ADD COLUMN color VARCHAR(30) NULL;
-ALTER TABLE projects MODIFY COLUMN status ENUM('ACTIVE', 'ARCHIVED', 'DELETED') NOT NULL DEFAULT 'ACTIVE';
-ALTER TABLE projects ADD CONSTRAINT fk_projects_owner FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE;
-
--- Align project_members table
-ALTER TABLE project_members ADD COLUMN project_id CHAR(36) NOT NULL;
-ALTER TABLE project_members ADD COLUMN user_id CHAR(36) NOT NULL;
-ALTER TABLE project_members ADD COLUMN role ENUM('OWNER', 'ADMIN', 'MEMBER', 'VIEWER') NOT NULL DEFAULT 'MEMBER';
-ALTER TABLE project_members ADD CONSTRAINT fk_project_members_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-ALTER TABLE project_members ADD CONSTRAINT fk_project_members_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-ALTER TABLE project_members ADD CONSTRAINT uk_project_members_project_user UNIQUE (project_id, user_id);
-
--- Align database_schemas table
-ALTER TABLE database_schemas ADD COLUMN project_id CHAR(36) NOT NULL;
-ALTER TABLE database_schemas ADD COLUMN db_type VARCHAR(50) NOT NULL DEFAULT 'mysql';
-ALTER TABLE database_schemas ADD COLUMN name VARCHAR(150) DEFAULT 'default_schema';
-ALTER TABLE database_schemas ADD CONSTRAINT fk_database_schemas_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-ALTER TABLE database_schemas ADD CONSTRAINT uk_database_schemas_project_name UNIQUE (project_id, name);
-
--- Align database_tables table
-ALTER TABLE database_tables ADD COLUMN schema_id CHAR(36) NOT NULL;
-ALTER TABLE database_tables ADD COLUMN name VARCHAR(150) NOT NULL;
-ALTER TABLE database_tables ADD COLUMN display_name VARCHAR(150) NULL;
-ALTER TABLE database_tables ADD COLUMN row_count INT NOT NULL DEFAULT 0;
-ALTER TABLE database_tables ADD COLUMN position_x INT DEFAULT 0;
-ALTER TABLE database_tables ADD COLUMN position_y INT DEFAULT 0;
-ALTER TABLE database_tables ADD CONSTRAINT fk_database_tables_schema FOREIGN KEY (schema_id) REFERENCES database_schemas(id) ON DELETE CASCADE;
-ALTER TABLE database_tables ADD CONSTRAINT uk_database_tables_schema_name UNIQUE (schema_id, name);
-
--- Align database_columns table
-ALTER TABLE database_columns ADD COLUMN table_id CHAR(36) NOT NULL;
-ALTER TABLE database_columns ADD COLUMN name VARCHAR(150) NOT NULL;
-ALTER TABLE database_columns ADD COLUMN data_type VARCHAR(100) NOT NULL;
-ALTER TABLE database_columns ADD COLUMN length INT NULL;
-ALTER TABLE database_columns ADD COLUMN precision_value INT NULL;
-ALTER TABLE database_columns ADD COLUMN scale_value INT NULL;
-ALTER TABLE database_columns ADD COLUMN is_primary_key BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE database_columns ADD COLUMN is_nullable BOOLEAN NOT NULL DEFAULT TRUE;
-ALTER TABLE database_columns ADD COLUMN is_unique BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE database_columns ADD COLUMN is_auto_increment BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE database_columns ADD COLUMN default_value TEXT NULL;
-ALTER TABLE database_columns ADD COLUMN ordinal_position INT NOT NULL DEFAULT 0;
-ALTER TABLE database_columns ADD COLUMN comment TEXT NULL;
-ALTER TABLE database_columns ADD CONSTRAINT fk_database_columns_table FOREIGN KEY (table_id) REFERENCES database_tables(id) ON DELETE CASCADE;
-ALTER TABLE database_columns ADD CONSTRAINT uk_database_columns_table_name UNIQUE (table_id, name);
-
--- Align database_relationships table
-ALTER TABLE database_relationships ADD COLUMN schema_id CHAR(36) NOT NULL;
-ALTER TABLE database_relationships ADD COLUMN source_table_id CHAR(36) NOT NULL;
-ALTER TABLE database_relationships ADD COLUMN source_column_id CHAR(36) NOT NULL;
-ALTER TABLE database_relationships ADD COLUMN target_table_id CHAR(36) NOT NULL;
-ALTER TABLE database_relationships ADD COLUMN target_column_id CHAR(36) NOT NULL;
-ALTER TABLE database_relationships ADD COLUMN constraint_name VARCHAR(150) NULL;
-ALTER TABLE database_relationships ADD COLUMN on_delete_action VARCHAR(50) DEFAULT 'NO ACTION';
-ALTER TABLE database_relationships ADD COLUMN on_update_action VARCHAR(50) DEFAULT 'NO ACTION';
-ALTER TABLE database_relationships ADD CONSTRAINT fk_relationships_schema FOREIGN KEY (schema_id) REFERENCES database_schemas(id) ON DELETE CASCADE;
-ALTER TABLE database_relationships ADD CONSTRAINT fk_relationships_source_table FOREIGN KEY (source_table_id) REFERENCES database_tables(id) ON DELETE CASCADE;
-ALTER TABLE database_relationships ADD CONSTRAINT fk_relationships_source_column FOREIGN KEY (source_column_id) REFERENCES database_columns(id) ON DELETE CASCADE;
-ALTER TABLE database_relationships ADD CONSTRAINT fk_relationships_target_table FOREIGN KEY (target_table_id) REFERENCES database_tables(id) ON DELETE CASCADE;
-ALTER TABLE database_relationships ADD CONSTRAINT fk_relationships_target_column FOREIGN KEY (target_column_id) REFERENCES database_columns(id) ON DELETE CASCADE;
-
--- Align database_indexes table
-ALTER TABLE database_indexes ADD COLUMN table_id CHAR(36) NOT NULL;
-ALTER TABLE database_indexes ADD COLUMN name VARCHAR(150) NOT NULL;
-ALTER TABLE database_indexes ADD COLUMN columns_json JSON NOT NULL;
-ALTER TABLE database_indexes ADD COLUMN is_unique BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE database_indexes ADD COLUMN index_type VARCHAR(50) DEFAULT 'BTREE';
-ALTER TABLE database_indexes ADD CONSTRAINT fk_database_indexes_table FOREIGN KEY (table_id) REFERENCES database_tables(id) ON DELETE CASCADE;
-ALTER TABLE database_indexes ADD CONSTRAINT uk_database_indexes_table_name UNIQUE (table_id, name);
-
--- Create workspaces table
-CREATE TABLE workspaces (
-    id CHAR(36) PRIMARY KEY,
+-- 15. workspaces
+CREATE TABLE IF NOT EXISTS workspaces (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     project_id CHAR(36) NOT NULL UNIQUE,
-    name VARCHAR(150) NULL,
-    config_json JSON NULL,
+    name VARCHAR(150),
+    config_json JSON,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_workspaces_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
--- Create environments table
-CREATE TABLE environments (
-    id CHAR(36) PRIMARY KEY,
+-- 16. ai_conversations
+CREATE TABLE IF NOT EXISTS ai_conversations (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     project_id CHAR(36) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    description TEXT NULL,
+    user_id CHAR(36),
+    title VARCHAR(200) NOT NULL,
+    mode VARCHAR(50) NOT NULL DEFAULT 'chat',
+    is_pinned BOOLEAN NOT NULL DEFAULT FALSE,
+    is_archived BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_environments_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    CONSTRAINT uk_environments_project_name UNIQUE (project_id, name)
+    CONSTRAINT fk_ai_conversations_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ai_conversations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_ai_conversations_project_id (project_id)
 );
 
--- Create environment_variables table
-CREATE TABLE environment_variables (
-    id CHAR(36) PRIMARY KEY,
-    environment_id CHAR(36) NOT NULL,
-    variable_key VARCHAR(100) NOT NULL,
-    initial_value TEXT NULL,
-    current_value TEXT NULL,
-    type VARCHAR(50) DEFAULT 'default',
-    is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    is_secret BOOLEAN NOT NULL DEFAULT FALSE,
+-- 17. ai_messages
+CREATE TABLE IF NOT EXISTS ai_messages (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    conversation_id CHAR(36) NOT NULL,
+    role ENUM('user', 'assistant', 'system') NOT NULL,
+    content LONGTEXT NOT NULL,
+    metadata_json JSON,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_ai_messages_conversation FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id) ON DELETE CASCADE,
+    INDEX idx_ai_messages_conversation_id (conversation_id)
+);
+
+-- 18. database_schemas
+CREATE TABLE IF NOT EXISTS database_schemas (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    project_id CHAR(36) NOT NULL,
+    db_type VARCHAR(50) NOT NULL DEFAULT 'mysql',
+    name VARCHAR(150) DEFAULT 'default_schema',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_environment_variables_environment FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE CASCADE,
-    CONSTRAINT uk_environment_variables_env_key UNIQUE (environment_id, variable_key)
+    UNIQUE KEY uk_database_schemas_project_name (project_id, name),
+    CONSTRAINT fk_database_schemas_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    INDEX idx_database_schemas_project_id (project_id)
 );
 
--- Create active_environments table
-CREATE TABLE active_environments (
-    id CHAR(36) PRIMARY KEY,
-    project_id CHAR(36) NOT NULL UNIQUE,
-    environment_id CHAR(36) NULL,
+-- 19. database_tables
+CREATE TABLE IF NOT EXISTS database_tables (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    schema_id CHAR(36) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    display_name VARCHAR(150),
+    row_count INT NOT NULL DEFAULT 0,
+    position_x INT DEFAULT 0,
+    position_y INT DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_active_environments_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    CONSTRAINT fk_active_environments_environment FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE SET NULL
+    UNIQUE KEY uk_database_tables_schema_name (schema_id, name),
+    CONSTRAINT fk_database_tables_schema FOREIGN KEY (schema_id) REFERENCES database_schemas(id) ON DELETE CASCADE,
+    INDEX idx_database_tables_schema_id (schema_id)
 );
 
--- Create api_collections table
-CREATE TABLE api_collections (
-    id CHAR(36) PRIMARY KEY,
+-- 20. database_columns
+CREATE TABLE IF NOT EXISTS database_columns (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    table_id CHAR(36) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    data_type VARCHAR(100) NOT NULL,
+    length INT,
+    precision_value INT,
+    scale_value INT,
+    is_primary_key BOOLEAN NOT NULL DEFAULT FALSE,
+    is_nullable BOOLEAN NOT NULL DEFAULT TRUE,
+    is_unique BOOLEAN NOT NULL DEFAULT FALSE,
+    is_auto_increment BOOLEAN NOT NULL DEFAULT FALSE,
+    default_value TEXT,
+    ordinal_position INT NOT NULL DEFAULT 0,
+    comment TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_database_columns_table_name (table_id, name),
+    CONSTRAINT fk_database_columns_table FOREIGN KEY (table_id) REFERENCES database_tables(id) ON DELETE CASCADE,
+    INDEX idx_database_columns_table_id (table_id)
+);
+
+-- 21. database_relationships
+CREATE TABLE IF NOT EXISTS database_relationships (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    schema_id CHAR(36) NOT NULL,
+    source_table_id CHAR(36) NOT NULL,
+    source_column_id CHAR(36) NOT NULL,
+    target_table_id CHAR(36) NOT NULL,
+    target_column_id CHAR(36) NOT NULL,
+    constraint_name VARCHAR(150),
+    on_delete_action VARCHAR(50) DEFAULT 'NO ACTION',
+    on_update_action VARCHAR(50) DEFAULT 'NO ACTION',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_relationships_schema FOREIGN KEY (schema_id) REFERENCES database_schemas(id) ON DELETE CASCADE,
+    CONSTRAINT fk_relationships_source_table FOREIGN KEY (source_table_id) REFERENCES database_tables(id) ON DELETE CASCADE,
+    CONSTRAINT fk_relationships_source_column FOREIGN KEY (source_column_id) REFERENCES database_columns(id) ON DELETE CASCADE,
+    CONSTRAINT fk_relationships_target_table FOREIGN KEY (target_table_id) REFERENCES database_tables(id) ON DELETE CASCADE,
+    CONSTRAINT fk_relationships_target_column FOREIGN KEY (target_column_id) REFERENCES database_columns(id) ON DELETE CASCADE
+);
+
+-- 22. database_indexes
+CREATE TABLE IF NOT EXISTS database_indexes (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    table_id CHAR(36) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    columns_json JSON NOT NULL,
+    is_unique BOOLEAN NOT NULL DEFAULT FALSE,
+    index_type VARCHAR(50) DEFAULT 'BTREE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_database_indexes_table_name (table_id, name),
+    CONSTRAINT fk_database_indexes_table FOREIGN KEY (table_id) REFERENCES database_tables(id) ON DELETE CASCADE
+);
+
+-- 23. api_collections
+CREATE TABLE IF NOT EXISTS api_collections (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     project_id CHAR(36) NOT NULL,
     name VARCHAR(150) NOT NULL,
-    description TEXT NULL,
+    description TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_api_collections_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+    CONSTRAINT fk_api_collections_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    INDEX idx_api_collections_project_id (project_id)
 );
 
--- Create api_folders table
-CREATE TABLE api_folders (
-    id CHAR(36) PRIMARY KEY,
+-- 24. api_folders
+CREATE TABLE IF NOT EXISTS api_folders (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     collection_id CHAR(36) NOT NULL,
-    parent_folder_id CHAR(36) NULL,
+    parent_folder_id CHAR(36),
     name VARCHAR(150) NOT NULL,
     ordinal_position INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -161,35 +146,104 @@ CREATE TABLE api_folders (
     CONSTRAINT fk_api_folders_parent FOREIGN KEY (parent_folder_id) REFERENCES api_folders(id) ON DELETE CASCADE
 );
 
--- Create api_requests table
-CREATE TABLE api_requests (
-    id CHAR(36) PRIMARY KEY,
+-- 25. api_requests
+CREATE TABLE IF NOT EXISTS api_requests (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     collection_id CHAR(36) NOT NULL,
-    folder_id CHAR(36) NULL,
+    folder_id CHAR(36),
     name VARCHAR(150) NOT NULL,
     method ENUM('GET', 'POST', 'PUT', 'PATCH', 'DELETE') NOT NULL DEFAULT 'GET',
     url TEXT NOT NULL,
-    description TEXT NULL,
-    headers_json JSON NULL,
-    params_json JSON NULL,
-    body LONGTEXT NULL,
+    description TEXT,
+    headers_json JSON,
+    params_json JSON,
+    body LONGTEXT,
     body_type VARCHAR(50) DEFAULT 'json',
-    response_example LONGTEXT NULL,
+    response_example LONGTEXT,
     ordinal_position INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_api_requests_collection FOREIGN KEY (collection_id) REFERENCES api_collections(id) ON DELETE CASCADE,
-    CONSTRAINT fk_api_requests_folder FOREIGN KEY (folder_id) REFERENCES api_folders(id) ON DELETE SET NULL
+    CONSTRAINT fk_api_requests_folder FOREIGN KEY (folder_id) REFERENCES api_folders(id) ON DELETE SET NULL,
+    INDEX idx_api_requests_collection_id (collection_id)
 );
 
--- Indexes
-CREATE INDEX idx_projects_owner_id ON projects(owner_id);
-CREATE INDEX idx_project_members_project_id ON project_members(project_id);
-CREATE INDEX idx_project_members_user_id ON project_members(user_id);
-CREATE INDEX idx_database_schemas_project_id ON database_schemas(project_id);
-CREATE INDEX idx_database_tables_schema_id ON database_tables(schema_id);
-CREATE INDEX idx_database_columns_table_id ON database_columns(table_id);
-CREATE INDEX idx_api_collections_project_id ON api_collections(project_id);
-CREATE INDEX idx_api_requests_collection_id ON api_requests(collection_id);
-CREATE INDEX idx_environments_project_id ON environments(project_id);
-CREATE INDEX idx_environment_variables_environment_id ON environment_variables(environment_id);
+-- 26. environments
+CREATE TABLE IF NOT EXISTS environments (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    project_id CHAR(36) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_environments_project_name (project_id, name),
+    CONSTRAINT fk_environments_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    INDEX idx_environments_project_id (project_id)
+);
+
+-- 27. environment_variables
+CREATE TABLE IF NOT EXISTS environment_variables (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    environment_id CHAR(36) NOT NULL,
+    variable_key VARCHAR(100) NOT NULL,
+    initial_value TEXT,
+    current_value TEXT,
+    type VARCHAR(50) DEFAULT 'default',
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    is_secret BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_environment_variables_env_key (environment_id, variable_key),
+    CONSTRAINT fk_environment_variables_environment FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE CASCADE,
+    INDEX idx_environment_variables_environment_id (environment_id)
+);
+
+-- 28. active_environments
+CREATE TABLE IF NOT EXISTS active_environments (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    project_id CHAR(36) NOT NULL UNIQUE,
+    environment_id CHAR(36),
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_active_environments_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    CONSTRAINT fk_active_environments_environment FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE SET NULL
+);
+
+-- 29. api_test_histories
+CREATE TABLE IF NOT EXISTS api_test_histories (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    project_id CHAR(36),
+    user_id CHAR(36),
+    method ENUM('GET', 'POST', 'PUT', 'PATCH', 'DELETE') NOT NULL,
+    url TEXT NOT NULL,
+    request_headers_json JSON,
+    request_body LONGTEXT,
+    response_status INT,
+    response_status_text VARCHAR(100),
+    response_headers_json JSON,
+    response_body LONGTEXT,
+    duration_ms INT,
+    response_size_bytes INT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_api_test_histories_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    CONSTRAINT fk_api_test_histories_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_api_test_histories_project_id (project_id),
+    INDEX idx_api_test_histories_user_id (user_id),
+    INDEX idx_api_test_histories_created_at (created_at)
+);
+
+-- 30. mock_endpoints
+CREATE TABLE IF NOT EXISTS mock_endpoints (
+    id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
+    project_id CHAR(36) NOT NULL,
+    method ENUM('GET', 'POST', 'PUT', 'PATCH', 'DELETE') NOT NULL,
+    path TEXT NOT NULL,
+    status_code INT NOT NULL DEFAULT 200,
+    delay_ms INT NOT NULL DEFAULT 0,
+    response_headers_json JSON,
+    response_body LONGTEXT,
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_mock_endpoints_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
+    INDEX idx_mock_endpoints_project_id (project_id)
+);

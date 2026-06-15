@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SaveApiDocumentationRequest {
     private String title;
+    private String description;
     private String version;
     private List<SaveApiDocumentationEndpointRequest> endpoints;
 }

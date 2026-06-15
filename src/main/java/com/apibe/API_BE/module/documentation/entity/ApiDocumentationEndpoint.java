@@ -48,6 +48,9 @@ public class ApiDocumentationEndpoint {
     @Column(name = "error_example", columnDefinition = "LONGTEXT")
     private String errorExample;
 
+    @Column(name = "ordinal_position", nullable = false)
+    private int ordinalPosition;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

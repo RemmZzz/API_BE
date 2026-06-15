@@ -66,6 +66,7 @@ public class ApiDocumentationService {
                         .build());
 
         doc.setTitle(request.getTitle() != null ? request.getTitle() : "API Documentation");
+        doc.setDescription(request.getDescription());
         doc.setVersion(request.getVersion() != null ? request.getVersion() : "1.0.0");
         doc.setUpdatedAt(LocalDateTime.now());
 
@@ -95,6 +96,7 @@ public class ApiDocumentationService {
                         .bodyExample(epReq.getBodyExample())
                         .responseExample(epReq.getResponseExample())
                         .errorExample(epReq.getErrorExample() != null ? epReq.getErrorExample() : "{\n  \"message\": \"Request failed\"\n}")
+                        .ordinalPosition(epReq.getOrdinalPosition())
                         .build();
 
                 if (epReq.getId() != null && !epReq.getId().isEmpty()) {
@@ -150,6 +152,7 @@ public class ApiDocumentationService {
                         .responseExample(req.getResponseExample() != null && !req.getResponseExample().isEmpty()
                                 ? req.getResponseExample() : "{\n  \"success\": true\n}")
                         .errorExample("{\n  \"message\": \"Request failed\"\n}")
+                        .ordinalPosition(req.getOrdinalPosition())
                         .build();
                 endpoints.add(ep);
             }

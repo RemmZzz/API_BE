@@ -14,6 +14,7 @@ import java.util.UUID;
 public class ApiDocumentationResponse {
     private UUID projectId;
     private String title;
+    private String description;
     private String version;
     private List<ApiDocumentationEndpointResponse> endpoints;
     private LocalDateTime updatedAt;

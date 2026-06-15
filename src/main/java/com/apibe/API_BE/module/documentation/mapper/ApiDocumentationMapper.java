@@ -31,6 +31,7 @@ public class ApiDocumentationMapper {
         return ApiDocumentationResponse.builder()
                 .projectId(doc.getProjectId())
                 .title(doc.getTitle())
+                .description(doc.getDescription())
                 .version(doc.getVersion())
                 .endpoints(endpointResponses)
                 .updatedAt(doc.getUpdatedAt())
@@ -55,6 +56,7 @@ public class ApiDocumentationMapper {
                 .bodyExample(endpoint.getBodyExample())
                 .responseExample(endpoint.getResponseExample())
                 .errorExample(endpoint.getErrorExample())
+                .ordinalPosition(endpoint.getOrdinalPosition())
                 .createdAt(endpoint.getCreatedAt())
                 .updatedAt(endpoint.getUpdatedAt())
                 .build();

@@ -27,7 +27,7 @@ public class Project {
     @Column(name = "name", nullable = false, length = 150)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "type", length = 50)

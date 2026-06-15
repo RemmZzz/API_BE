@@ -17,4 +17,5 @@ public class SaveApiDocumentationEndpointRequest {
     private String bodyExample;
     private String responseExample;
     private String errorExample;
+    private int ordinalPosition;
 }

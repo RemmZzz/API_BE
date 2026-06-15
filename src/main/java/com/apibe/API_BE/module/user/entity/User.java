@@ -31,7 +31,7 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "password_hash")
+    @Column(name = "password_hash", columnDefinition = "TEXT")
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
@@ -45,7 +45,7 @@ public class User {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "avatar_url")
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
     private String avatarUrl;
 
     @Column(name = "last_login_at")

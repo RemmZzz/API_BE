@@ -28,6 +28,9 @@ public class ApiDocumentation {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
     @Column(name = "version")
     private String version;
 
