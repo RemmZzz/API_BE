@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS api_test_history (
         FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS idx_api_test_history_project_id  ON api_test_history(project_id);
-CREATE INDEX IF NOT EXISTS idx_api_test_history_method      ON api_test_history(method);
-CREATE INDEX IF NOT EXISTS idx_api_test_history_created_at  ON api_test_history(created_at);
+CREATE INDEX idx_api_test_history_project_id  ON api_test_history(project_id);
+CREATE INDEX idx_api_test_history_method      ON api_test_history(method);
+CREATE INDEX idx_api_test_history_created_at  ON api_test_history(created_at);

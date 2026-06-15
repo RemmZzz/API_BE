@@ -41,8 +41,8 @@ CREATE TABLE IF NOT EXISTS api_requests (
     CONSTRAINT fk_requests_folder     FOREIGN KEY (folder_id)     REFERENCES collection_folders(id) ON DELETE SET NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_collections_project_id  ON collections(project_id);
-CREATE INDEX IF NOT EXISTS idx_folders_collection_id   ON collection_folders(collection_id);
-CREATE INDEX IF NOT EXISTS idx_folders_parent_id       ON collection_folders(parent_folder_id);
-CREATE INDEX IF NOT EXISTS idx_requests_collection_id  ON api_requests(collection_id);
-CREATE INDEX IF NOT EXISTS idx_requests_folder_id      ON api_requests(folder_id);
+CREATE INDEX idx_collections_project_id  ON collections(project_id);
+CREATE INDEX idx_folders_collection_id   ON collection_folders(collection_id);
+CREATE INDEX idx_folders_parent_id       ON collection_folders(parent_folder_id);
+CREATE INDEX idx_requests_collection_id  ON api_requests(collection_id);
+CREATE INDEX idx_requests_folder_id      ON api_requests(folder_id);
