@@ -12,13 +12,28 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "database_index")
+@Table(name = "database_indexes")
 public class DatabaseIndex {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
+
+    @Column(name = "table_id", columnDefinition = "CHAR(36)", nullable = false)
+    private UUID tableId;
+
+    @Column(name = "name", nullable = false, length = 150)
+    private String name;
+
+    @Column(name = "columns_json", columnDefinition = "json", nullable = false)
+    private String columnsJson;
+
+    @Column(name = "is_unique", nullable = false)
+    private boolean isUnique;
+
+    @Column(name = "index_type", length = 50)
+    private String indexType;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -31,6 +46,9 @@ public class DatabaseIndex {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.indexType == null) {
+            this.indexType = "BTREE";
+        }
     }
 
     @PreUpdate
@@ -38,4 +56,3 @@ public class DatabaseIndex {
         this.updatedAt = LocalDateTime.now();
     }
 }
-

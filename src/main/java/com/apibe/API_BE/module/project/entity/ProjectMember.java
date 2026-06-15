@@ -21,16 +21,15 @@ public class ProjectMember {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
-    @Column(name = "project_id", nullable = false, columnDefinition = "CHAR(36)")
+    @Column(name = "project_id", columnDefinition = "CHAR(36)", nullable = false)
     private UUID projectId;
 
-    @Column(name = "user_id", nullable = false, columnDefinition = "CHAR(36)")
+    @Column(name = "user_id", columnDefinition = "CHAR(36)", nullable = false)
     private UUID userId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 50)
-    @Builder.Default
-    private MemberRole role = MemberRole.MEMBER;
+    @Column(name = "role", nullable = false)
+    private MemberRole role;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -43,6 +42,9 @@ public class ProjectMember {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.role == null) {
+            this.role = MemberRole.MEMBER;
+        }
     }
 
     @PreUpdate

@@ -1,15 +1,16 @@
 package com.apibe.API_BE.global.exception;
 
 import com.apibe.API_BE.global.response.ErrorResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -26,26 +27,37 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(errorCode.getStatus()).body(response);
+        return ResponseEntity.status(errorCode.getStatus().value()).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
-                .collect(Collectors.toList());
+        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(this::formatFieldError)
+                .toList();
 
         ErrorResponse response = ErrorResponse.builder()
                 .success(false)
-                .message("Validation failed")
-                .errorCode(ErrorCode.BAD_REQUEST.getCode())
+                .message(ErrorCode.INVALID_REQUEST.getMessage())
+                .errorCode(ErrorCode.INVALID_REQUEST.getCode())
                 .errors(errors)
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus().value()).body(response);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(Exception ex) {
+        ErrorResponse response = ErrorResponse.builder()
+                .success(false)
+                .message(ErrorCode.INVALID_REQUEST.getMessage())
+                .errorCode(ErrorCode.INVALID_REQUEST.getCode())
+                .errors(List.of(ex.getMessage()))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus().value()).body(response);
     }
 
     @ExceptionHandler(Exception.class)
@@ -60,4 +72,9 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(500).body(response);
     }
+
+    private String formatFieldError(FieldError fieldError) {
+        return fieldError.getField() + ": " + fieldError.getDefaultMessage();
+    }
 }
+

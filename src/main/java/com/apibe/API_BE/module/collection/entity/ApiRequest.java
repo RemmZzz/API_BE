@@ -21,41 +21,42 @@ public class ApiRequest {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
-    @Column(name = "collection_id", nullable = false, columnDefinition = "CHAR(36)")
+    @Column(name = "collection_id", columnDefinition = "CHAR(36)", nullable = false)
     private UUID collectionId;
 
     @Column(name = "folder_id", columnDefinition = "CHAR(36)")
     private UUID folderId;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false, length = 150)
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "method", nullable = false, length = 20)
-    @Builder.Default
-    private HttpMethodType method = HttpMethodType.GET;
+    @Column(name = "method", nullable = false)
+    private HttpMethodType method;
 
     @Column(name = "url", nullable = false, columnDefinition = "TEXT")
     private String url;
 
-    /** JSON string stored as LONGTEXT */
-    @Column(name = "headers", columnDefinition = "LONGTEXT")
-    private String headers;
+    @Column(name = "description")
+    private String description;
 
-    /** JSON string stored as LONGTEXT */
-    @Column(name = "params", columnDefinition = "LONGTEXT")
-    private String params;
+    @Column(name = "headers_json", columnDefinition = "json")
+    private String headersJson;
 
-    /** JSON string stored as LONGTEXT */
+    @Column(name = "params_json", columnDefinition = "json")
+    private String paramsJson;
+
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
 
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
+    @Column(name = "body_type", length = 50)
+    private String bodyType;
 
-    @Column(name = "sort_order", nullable = false)
-    @Builder.Default
-    private Integer sortOrder = 0;
+    @Column(name = "response_example", columnDefinition = "LONGTEXT")
+    private String responseExample;
+
+    @Column(name = "ordinal_position", nullable = false)
+    private int ordinalPosition;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -68,6 +69,12 @@ public class ApiRequest {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.method == null) {
+            this.method = HttpMethodType.GET;
+        }
+        if (this.bodyType == null) {
+            this.bodyType = "json";
+        }
     }
 
     @PreUpdate

@@ -22,30 +22,34 @@ public class User {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
-    @Column(name = "username", nullable = false, unique = true, length = 100)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "email", nullable = false, unique = true, length = 255)
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "password", length = 255)
-    private String password;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "full_name", length = 255)
-    private String fullName;
+    @Column(name = "password_hash")
+    private String passwordHash;
 
-    @Column(name = "avatar_url", length = 512)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private UserRole role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus status;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "avatar_url")
     private String avatarUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, length = 50)
-    @Builder.Default
-    private UserRole role = UserRole.USER;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 50)
-    @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -65,3 +69,4 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 }
+

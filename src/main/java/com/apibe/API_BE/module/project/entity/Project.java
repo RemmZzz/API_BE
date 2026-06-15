@@ -21,19 +21,24 @@ public class Project {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
-    @Column(name = "owner_id", columnDefinition = "CHAR(36)")
+    @Column(name = "owner_id", columnDefinition = "CHAR(36)", nullable = false)
     private UUID ownerId;
 
-    @Column(name = "name", nullable = false, length = 255)
+    @Column(name = "name", nullable = false, length = 150)
     private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "description")
     private String description;
 
+    @Column(name = "type", length = 50)
+    private String type;
+
+    @Column(name = "color", length = 30)
+    private String color;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 50)
-    @Builder.Default
-    private ProjectStatus status = ProjectStatus.ACTIVE;
+    @Column(name = "status", nullable = false)
+    private ProjectStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -46,6 +51,9 @@ public class Project {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+        if (this.status == null) {
+            this.status = ProjectStatus.ACTIVE;
+        }
     }
 
     @PreUpdate
