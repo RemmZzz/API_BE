@@ -34,3 +34,6 @@ build/
 
 ### Grapuco ###
 .grapuco/
+
+# Local Database Design Schema
+/docs/database-design.md
