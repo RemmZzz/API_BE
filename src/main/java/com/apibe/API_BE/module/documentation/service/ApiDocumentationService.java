@@ -12,7 +12,6 @@ import com.apibe.API_BE.module.documentation.dto.response.ApiDocumentationRespon
 import com.apibe.API_BE.module.documentation.entity.ApiDocumentation;
 import com.apibe.API_BE.module.documentation.entity.ApiDocumentationEndpoint;
 import com.apibe.API_BE.module.documentation.mapper.ApiDocumentationMapper;
-import com.apibe.API_BE.module.documentation.repository.ApiDocumentationEndpointRepository;
 import com.apibe.API_BE.module.documentation.repository.ApiDocumentationRepository;
 import com.apibe.API_BE.module.project.repository.ProjectRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,10 +27,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class ApiDocumentationService {
 
     private final ApiDocumentationRepository apiDocumentationRepository;
-    private final ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
     private final ProjectRepository projectRepository;
     private final ApiCollectionRepository apiCollectionRepository;
     private final ApiRequestRepository apiRequestRepository;
