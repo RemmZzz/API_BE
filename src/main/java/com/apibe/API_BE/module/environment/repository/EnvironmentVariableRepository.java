@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface EnvironmentVariableRepository extends JpaRepository<EnvironmentVariable, UUID> {
     List<EnvironmentVariable> findByEnvironmentId(UUID environmentId);
+    void deleteByEnvironmentId(UUID environmentId);
 }
