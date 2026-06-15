@@ -16,6 +16,7 @@ import com.apibe.API_BE.module.documentation.repository.ApiDocumentationReposito
 import com.apibe.API_BE.module.project.repository.ProjectRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings("null")
 public class ApiDocumentationService {
 
     private final ApiDocumentationRepository apiDocumentationRepository;
@@ -38,7 +38,7 @@ public class ApiDocumentationService {
     private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
-    public ApiDocumentationResponse getDocumentation(UUID projectId) {
+    public ApiDocumentationResponse getDocumentation(@NonNull UUID projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new AppException(ErrorCode.NOT_FOUND, "Project not found");
         }
@@ -55,7 +55,7 @@ public class ApiDocumentationService {
     }
 
     @Transactional
-    public ApiDocumentationResponse saveDocumentation(UUID projectId, SaveApiDocumentationRequest request) {
+    public ApiDocumentationResponse saveDocumentation(@NonNull UUID projectId, SaveApiDocumentationRequest request) {
         if (!projectRepository.existsById(projectId)) {
             throw new AppException(ErrorCode.NOT_FOUND, "Project not found");
         }
@@ -116,7 +116,7 @@ public class ApiDocumentationService {
     }
 
     @Transactional
-    public ApiDocumentationResponse generateDocumentationFromCollections(UUID projectId) {
+    public ApiDocumentationResponse generateDocumentationFromCollections(@NonNull UUID projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new AppException(ErrorCode.NOT_FOUND, "Project not found");
         }
@@ -164,7 +164,7 @@ public class ApiDocumentationService {
     }
 
     @Transactional(readOnly = true)
-    public String exportMarkdown(UUID projectId) {
+    public String exportMarkdown(@NonNull UUID projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new AppException(ErrorCode.NOT_FOUND, "Project not found");
         }
