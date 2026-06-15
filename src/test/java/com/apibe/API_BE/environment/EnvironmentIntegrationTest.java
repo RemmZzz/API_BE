@@ -37,6 +37,9 @@ public class EnvironmentIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean private com.apibe.API_BE.module.documentation.repository.ApiDocumentationRepository apiDocumentationRepository;
+    @MockitoBean private com.apibe.API_BE.module.documentation.repository.ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
+
     // Mocks for Context Load without db
     @MockitoBean private AdminUserRepository adminUserRepository;
     @MockitoBean private AdminProjectRepository adminProjectRepository;

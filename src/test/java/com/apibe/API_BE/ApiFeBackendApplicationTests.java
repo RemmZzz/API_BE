@@ -38,6 +38,12 @@ import com.apibe.API_BE.module.workspace.repository.WorkspaceRepository;
 class ApiFeBackendApplicationTests {
 
     @MockitoBean
+    private com.apibe.API_BE.module.documentation.repository.ApiDocumentationRepository apiDocumentationRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.documentation.repository.ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
+
+    @MockitoBean
     private AdminUserRepository adminUserRepository;
 
     @MockitoBean

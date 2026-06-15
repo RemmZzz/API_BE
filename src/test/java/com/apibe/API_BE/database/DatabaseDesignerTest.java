@@ -47,6 +47,9 @@ public class DatabaseDesignerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockitoBean private com.apibe.API_BE.module.documentation.repository.ApiDocumentationRepository apiDocumentationRepository;
+    @MockitoBean private com.apibe.API_BE.module.documentation.repository.ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
+
     // Mock all repositories required for context configuration to load without db
     @MockitoBean private AdminUserRepository adminUserRepository;
     @MockitoBean private AdminProjectRepository adminProjectRepository;
