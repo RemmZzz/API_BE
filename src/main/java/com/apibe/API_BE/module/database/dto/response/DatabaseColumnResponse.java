@@ -1,6 +1,7 @@
 package com.apibe.API_BE.module.database.dto.response;
 
 import lombok.*;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -8,7 +9,13 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DatabaseColumnResponse {
-
-    private String placeholder;
+    private UUID id;
+    private String name;
+    private String type;
+    private boolean primaryKey;
+    private boolean nullable;
+    private boolean unique;
+    private String defaultValue;
+    private int ordinalPosition;
+    private String comment;
 }
-

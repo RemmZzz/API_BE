@@ -8,7 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SqlPreviewResponse {
-
-    private String placeholder;
+    private String sql;
 }
-

@@ -1,4 +1,4 @@
-package com.apibe.API_BE.module.database.dto.request;
+package com.apibe.API_BE.module.database.dto.response;
 
 import lombok.*;
 import java.util.UUID;
@@ -8,7 +8,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateRelationshipRequest {
+public class DatabaseRelationshipResponse {
+    private UUID id;
     private UUID sourceTableId;
     private UUID sourceColumnId;
     private UUID targetTableId;

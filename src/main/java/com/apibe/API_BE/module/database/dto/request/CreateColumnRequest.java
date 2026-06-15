@@ -8,7 +8,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateColumnRequest {
-
-    private String placeholder;
+    private String name;
+    private String type;
+    private boolean primaryKey;
+    private boolean nullable;
+    private boolean unique;
+    private String defaultValue;
+    private Integer ordinalPosition;
+    private String comment;
 }
-

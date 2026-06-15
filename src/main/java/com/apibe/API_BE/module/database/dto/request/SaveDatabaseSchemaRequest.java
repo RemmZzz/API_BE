@@ -1,6 +1,7 @@
 package com.apibe.API_BE.module.database.dto.request;
 
 import lombok.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -8,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaveDatabaseSchemaRequest {
-
-    private String placeholder;
+    private String dbType;
+    private String name;
+    private List<CreateTableRequest> tables;
 }
-

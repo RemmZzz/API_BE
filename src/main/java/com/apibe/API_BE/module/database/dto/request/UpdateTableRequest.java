@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateTableRequest {
-
-    private String placeholder;
+    private String name;
+    private Integer positionX;
+    private Integer positionY;
+    private Integer rowCount;
 }
-

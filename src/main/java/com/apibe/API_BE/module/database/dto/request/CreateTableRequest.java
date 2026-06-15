@@ -1,6 +1,7 @@
 package com.apibe.API_BE.module.database.dto.request;
 
 import lombok.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -8,7 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateTableRequest {
-
-    private String placeholder;
+    private String name;
+    private List<CreateColumnRequest> columns;
+    private Integer positionX;
+    private Integer positionY;
 }
-
