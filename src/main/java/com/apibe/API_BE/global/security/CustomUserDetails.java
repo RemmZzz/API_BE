@@ -10,10 +10,15 @@ import java.util.Collections;
 import java.util.UUID;
 
 public class CustomUserDetails implements UserDetails {
+
     private final User user;
 
     public CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    public static CustomUserDetails from(User user) {
+        return new CustomUserDetails(user);
     }
 
     public User getUser() {
@@ -22,6 +27,10 @@ public class CustomUserDetails implements UserDetails {
 
     public UUID getId() {
         return user.getId();
+    }
+
+    public String getEmail() {
+        return user.getEmail();
     }
 
     @Override
@@ -36,6 +45,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
+        return user.getEmail();
+    }
+
+    public String getBusinessUsername() {
         return user.getUsername();
     }
 
@@ -56,6 +69,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return "ACTIVE".equalsIgnoreCase(user.getStatus().name());
+        return user.getStatus() != null && "ACTIVE".equalsIgnoreCase(user.getStatus().name());
     }
 }
