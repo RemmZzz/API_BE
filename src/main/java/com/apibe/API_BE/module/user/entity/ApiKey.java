@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "api_key")
+@Table(name = "api_keys")
 public class ApiKey {
 
     @Id

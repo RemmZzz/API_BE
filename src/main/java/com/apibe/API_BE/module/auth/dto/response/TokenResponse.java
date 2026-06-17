@@ -9,6 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 public class TokenResponse {
 
-    private String placeholder;
+    private String accessToken;
+    private String refreshToken;
+    private long expiresIn;
 }
 

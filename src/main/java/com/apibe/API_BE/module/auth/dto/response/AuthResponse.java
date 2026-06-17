@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 public class AuthResponse {
 
-    private String placeholder;
+    private String message;
 }
 
