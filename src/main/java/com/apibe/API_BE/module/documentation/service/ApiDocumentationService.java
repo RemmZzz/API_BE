@@ -146,13 +146,13 @@ public class ApiDocumentationService {
                         .method(req.getMethod() != null ? req.getMethod().name() : "GET")
                         .url(req.getUrl() != null ? req.getUrl() : "/endpoint")
                         .description(desc)
-                        .headersJson(req.getHeadersJson())
-                        .paramsJson(req.getParamsJson())
+                        .headersJson(req.getHeaders())
+                        .paramsJson(req.getParams())
                         .bodyExample(req.getBody())
                         .responseExample(req.getResponseExample() != null && !req.getResponseExample().isEmpty()
                                 ? req.getResponseExample() : "{\n  \"success\": true\n}")
                         .errorExample("{\n  \"message\": \"Request failed\"\n}")
-                        .ordinalPosition(req.getOrdinalPosition())
+                        .ordinalPosition(req.getSortOrder())
                         .build();
                 endpoints.add(ep);
             }

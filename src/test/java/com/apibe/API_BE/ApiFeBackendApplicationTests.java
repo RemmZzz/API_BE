@@ -15,6 +15,9 @@ import com.apibe.API_BE.module.admin.repository.AdminUserRepository;
 import com.apibe.API_BE.module.collection.repository.ApiCollectionRepository;
 import com.apibe.API_BE.module.collection.repository.ApiFolderRepository;
 import com.apibe.API_BE.module.collection.repository.ApiRequestRepository;
+import com.apibe.API_BE.module.collection.repository.CollectionFolderRepository;
+import com.apibe.API_BE.module.collection.repository.CollectionRepository;
+import com.apibe.API_BE.module.documentation.repository.ApiDocumentationEndpointRepository;
 import com.apibe.API_BE.module.database.repository.DatabaseColumnRepository;
 import com.apibe.API_BE.module.database.repository.DatabaseIndexRepository;
 import com.apibe.API_BE.module.database.repository.DatabaseRelationshipRepository;
@@ -31,6 +34,7 @@ import com.apibe.API_BE.module.user.repository.UserRepository;
 import com.apibe.API_BE.module.user.repository.UserSessionRepository;
 import com.apibe.API_BE.module.user.repository.UserSettingRepository;
 import com.apibe.API_BE.module.workspace.repository.WorkspaceRepository;
+import com.apibe.API_BE.module.apitester.repository.ApiTestHistoryRepository;
 
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
@@ -38,10 +42,13 @@ import com.apibe.API_BE.module.workspace.repository.WorkspaceRepository;
 class ApiFeBackendApplicationTests {
 
     @MockitoBean
+    private ApiTestHistoryRepository apiTestHistoryRepository;
+
+    @MockitoBean
     private com.apibe.API_BE.module.documentation.repository.ApiDocumentationRepository apiDocumentationRepository;
 
     @MockitoBean
-    private com.apibe.API_BE.module.documentation.repository.ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
+    private ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
 
     @MockitoBean
     private AdminUserRepository adminUserRepository;
@@ -66,6 +73,12 @@ class ApiFeBackendApplicationTests {
 
     @MockitoBean
     private ApiCollectionRepository apiCollectionRepository;
+
+    @MockitoBean
+    private CollectionRepository collectionRepository;
+
+    @MockitoBean
+    private CollectionFolderRepository collectionFolderRepository;
 
     @MockitoBean
     private ApiFolderRepository apiFolderRepository;

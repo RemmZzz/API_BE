@@ -16,6 +16,7 @@ import com.apibe.API_BE.module.user.repository.PasswordResetTokenRepository;
 import com.apibe.API_BE.module.admin.repository.*;
 import com.apibe.API_BE.module.collection.repository.*;
 import com.apibe.API_BE.module.environment.repository.*;
+import com.apibe.API_BE.module.apitester.repository.ApiTestHistoryRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
 })
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @SuppressWarnings("null")
 public class DatabaseDesignerTest {
 
@@ -55,10 +56,13 @@ public class DatabaseDesignerTest {
     @MockitoBean private AdminProjectRepository adminProjectRepository;
     @MockitoBean private AdminPaymentRepository adminPaymentRepository;
     @MockitoBean private AdminApiTestHistoryRepository adminApiTestHistoryRepository;
+    @MockitoBean private ApiTestHistoryRepository apiTestHistoryRepository;
     @MockitoBean private AdminAiConversationRepository adminAiConversationRepository;
     @MockitoBean private AdminActivityLogRepository adminActivityLogRepository;
     @MockitoBean private AdminAuditLogRepository adminAuditLogRepository;
     @MockitoBean private ApiCollectionRepository apiCollectionRepository;
+    @MockitoBean private CollectionRepository collectionRepository;
+    @MockitoBean private CollectionFolderRepository collectionFolderRepository;
     @MockitoBean private ApiFolderRepository apiFolderRepository;
     @MockitoBean private ApiRequestRepository apiRequestRepository;
     @MockitoBean private ActiveEnvironmentRepository activeEnvironmentRepository;

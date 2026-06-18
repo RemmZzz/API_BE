@@ -15,6 +15,7 @@ import com.apibe.API_BE.module.project.repository.ProjectMemberRepository;
 import com.apibe.API_BE.module.project.repository.ProjectRepository;
 import com.apibe.API_BE.module.user.repository.*;
 import com.apibe.API_BE.module.workspace.repository.WorkspaceRepository;
+import com.apibe.API_BE.module.apitester.repository.ApiTestHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
 })
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @SuppressWarnings("null")
 public class ApiDocumentationIntegrationTest {
 
@@ -73,10 +74,13 @@ public class ApiDocumentationIntegrationTest {
     // Module-specific Mocks
     @MockitoBean private ProjectRepository projectRepository;
     @MockitoBean private ApiCollectionRepository apiCollectionRepository;
+    @MockitoBean private CollectionRepository collectionRepository;
+    @MockitoBean private CollectionFolderRepository collectionFolderRepository;
     @MockitoBean private ApiRequestRepository apiRequestRepository;
     @MockitoBean private ApiFolderRepository apiFolderRepository;
     @MockitoBean private ApiDocumentationRepository apiDocumentationRepository;
     @MockitoBean private ApiDocumentationEndpointRepository apiDocumentationEndpointRepository;
+    @MockitoBean private ApiTestHistoryRepository apiTestHistoryRepository;
 
     private UUID projectId;
     private ApiDocumentation mockDocumentation;
@@ -195,8 +199,8 @@ public class ApiDocumentationIntegrationTest {
                 .method(HttpMethodType.GET)
                 .url("/api/users")
                 .description("Get list of users")
-                .headersJson("[]")
-                .paramsJson("[]")
+                .headers("[]")
+                .params("[]")
                 .body("{}")
                 .responseExample("[]")
                 .build();

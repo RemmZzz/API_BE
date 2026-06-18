@@ -106,7 +106,6 @@ class AuthServiceImplTest {
         when(passwordEncoder.matches("12345678", "password-hash")).thenReturn(true);
         when(jwtTokenProvider.generateAccessToken(user)).thenReturn("access-token");
         when(jwtTokenProvider.generateRefreshToken(user)).thenReturn("refresh-token");
-        when(passwordEncoder.encode("refresh-token")).thenReturn("refresh-hash");
         when(httpServletRequest.getHeader(anyString())).thenAnswer(invocation -> {
             String header = invocation.getArgument(0);
             return "User-Agent".equals(header) ? "JUnit" : null;
@@ -120,7 +119,7 @@ class AuthServiceImplTest {
         assertThat(response.getAccessToken()).isEqualTo("access-token");
         assertThat(response.getRefreshToken()).isEqualTo("refresh-token");
         assertThat(response.getExpiresIn()).isEqualTo(900);
-        assertThat(sessionCaptor.getValue().getRefreshTokenHash()).isEqualTo("refresh-hash");
+        assertThat(sessionCaptor.getValue().getRefreshTokenHash()).isEqualTo("DrF2Q9TpJhFjeDpCCFnJLH0hL6liQQahK1EK++wmYSA=");
         assertThat(user.getLastLoginAt()).isNotNull();
     }
 }
