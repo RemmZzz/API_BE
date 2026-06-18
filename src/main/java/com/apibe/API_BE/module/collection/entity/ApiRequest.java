@@ -3,6 +3,8 @@ package com.apibe.API_BE.module.collection.entity;
 import com.apibe.API_BE.global.enums.HttpMethodType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,12 +20,15 @@ public class ApiRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.VARCHAR) // <--- Ép kiểu UUID
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private UUID id;
 
+    @JdbcTypeCode(SqlTypes.VARCHAR) // <--- Ép kiểu UUID
     @Column(name = "collection_id", columnDefinition = "CHAR(36)", nullable = false)
     private UUID collectionId;
 
+    @JdbcTypeCode(SqlTypes.VARCHAR) // <--- Ép kiểu UUID
     @Column(name = "folder_id", columnDefinition = "CHAR(36)")
     private UUID folderId;
 
@@ -40,11 +45,13 @@ public class ApiRequest {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "headers_json", columnDefinition = "json")
-    private String headersJson;
+    // ĐÃ SỬA: headersJson -> headers
+    @Column(name = "headers", columnDefinition = "LONGTEXT")
+    private String headers;
 
-    @Column(name = "params_json", columnDefinition = "json")
-    private String paramsJson;
+    // ĐÃ SỬA: paramsJson -> params
+    @Column(name = "params", columnDefinition = "LONGTEXT")
+    private String params;
 
     @Column(name = "body", columnDefinition = "LONGTEXT")
     private String body;
@@ -55,8 +62,9 @@ public class ApiRequest {
     @Column(name = "response_example", columnDefinition = "LONGTEXT")
     private String responseExample;
 
-    @Column(name = "ordinal_position", nullable = false)
-    private int ordinalPosition;
+    // ĐÃ SỬA: ordinalPosition -> sortOrder
+    @Column(name = "sort_order", nullable = false)
+    private int sortOrder;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

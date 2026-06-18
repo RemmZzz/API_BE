@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  flyway:
+    enabled: false
+
+  mail:
+    host: localhost
+    port: 2525
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client-id
+            client-secret: test-google-client-secret
+            scope:
+              - email
+              - profile
+
+app:
+  jwt:
+    secret: test-secret-key-that-is-long-enough-for-hmac-sha256
+    access-token-expiration-ms: 900000
+    refresh-token-expiration-ms: 604800000
+  frontend:
+    oauth-success-url: http://localhost:5173/oauth-success
+    reset-password-url: http://localhost:5173/reset-password

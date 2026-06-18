@@ -5,6 +5,7 @@ public enum HttpMethodType {
     POST,
     PUT,
     PATCH,
-    DELETE
+    DELETE,
+    HEAD,
+    OPTIONS
 }
-

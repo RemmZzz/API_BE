@@ -9,4 +9,7 @@ import java.util.UUID;
 public interface ApiRequestRepository extends JpaRepository<ApiRequest, UUID> {
     List<ApiRequest> findByCollectionId(UUID collectionId);
     List<ApiRequest> findByFolderId(UUID folderId);
+    
+    // <--- THÊM DÒNG NÀY ĐỂ FIX LỖI BIÊN DỊCH --->
+    List<ApiRequest> findByCollectionIdOrderBySortOrderAscCreatedAtAsc(UUID collectionId);
 }

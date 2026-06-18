@@ -459,12 +459,12 @@ public class ProjectService {
                         .method(req.getMethod())
                         .url(req.getUrl())
                         .description(req.getDescription())
-                        .headersJson(req.getHeadersJson())
-                        .paramsJson(req.getParamsJson())
+                        .headers(req.getHeaders())        // <--- ĐÃ SỬA THÀNH headers
+                        .params(req.getParams())          // <--- ĐÃ SỬA THÀNH params
                         .body(req.getBody())
                         .bodyType(req.getBodyType())
                         .responseExample(req.getResponseExample())
-                        .ordinalPosition(req.getOrdinalPosition())
+                        .sortOrder(req.getSortOrder())    // <--- ĐÃ SỬA THÀNH sortOrder
                         .build();
                 apiRequestRepository.save(clonedReq);
             }
