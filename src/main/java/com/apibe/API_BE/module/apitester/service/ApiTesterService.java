@@ -38,6 +38,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class ApiTesterService {
 
     private static final int         MAX_TIMEOUT_MS          = 60_000;
@@ -136,8 +137,9 @@ public class ApiTesterService {
             statusCode          = ex.getStatusCode().value();
             statusText          = ex.getStatusText();
             responseBodyStr     = truncateIfNeeded(ex.getResponseBodyAsString());
-            responseHeadersJson = ex.getResponseHeaders() != null
-                    ? toJson(ex.getResponseHeaders().toSingleValueMap()) : null;
+            var headers = ex.getResponseHeaders();
+            responseHeadersJson = headers != null
+                    ? toJson(headers.toSingleValueMap()) : null;
             success             = true;   // server did respond
 
         } catch (RestClientException ex) {
@@ -252,8 +254,8 @@ public class ApiTesterService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND,
                         "Test history not found: " + historyId));
 
-        // TODO: when auth/ownership is implemented, verify the current user
-        //       has access to record.getProjectId() before deleting.
+        // Future validation: when auth/ownership is implemented, verify the current user
+        //                   has access to record.getProjectId() before deleting.
 
         historyRepository.delete(record);
     }
@@ -273,8 +275,8 @@ public class ApiTesterService {
 
         URL url;
         try {
-            url = new URL(trimmed);
-        } catch (MalformedURLException e) {
+            url = URI.create(trimmed).toURL();
+        } catch (MalformedURLException | IllegalArgumentException e) {
             throw new AppException(ErrorCode.BAD_REQUEST, "Malformed URL: " + trimmed);
         }
 

@@ -40,3 +40,9 @@ build/
 
 # Local Database Design Schema
 /docs/database-design.md
+
+# Agent skills (local only)
+AGENTS.md
+CONTEXT.md
+docs/agents/
+docs/adr/

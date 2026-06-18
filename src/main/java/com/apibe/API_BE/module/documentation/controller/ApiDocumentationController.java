@@ -13,6 +13,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/projects/{projectId}/documentation")
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class ApiDocumentationController {
 
     private final ApiDocumentationService apiDocumentationService;

@@ -42,6 +42,10 @@ public class OtpVerification {
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt;
 
+    @Column(name = "failed_attempts", nullable = false)
+    @Builder.Default
+    private int failedAttempts = 0;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

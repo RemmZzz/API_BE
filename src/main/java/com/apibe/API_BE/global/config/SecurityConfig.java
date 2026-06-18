@@ -55,8 +55,11 @@ public class SecurityConfig {
                         "/api/auth/login",
                         "/api/auth/refresh-token",
                         "/api/auth/forgot-password",
-                        "/api/auth/reset-password"
+                        "/api/auth/reset-password",
+                        "/api/auth/oauth-exchange",
+                        "/api/payments/webhook/sepay"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/plans").permitAll()
                 .requestMatchers(
                         "/oauth2/**",
                         "/login/oauth2/**",

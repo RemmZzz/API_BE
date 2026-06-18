@@ -104,8 +104,18 @@ public class ProjectService {
                 normalizeFilter(type),
                 PageRequest.of(safePage, safeLimit, Sort.by(Sort.Direction.DESC, "updatedAt")));
 
-        List<ProjectResponse> items = projects.getContent().stream()
-                .map(this::toProjectResponse)
+        List<Project> projectList = projects.getContent();
+        List<UUID> projectIds = projectList.stream().map(Project::getId).collect(Collectors.toList());
+
+        Map<UUID, Integer> apiCounts = getApiCounts(projectIds);
+        Map<UUID, Integer> tableCounts = getDatabaseTableCounts(projectIds);
+        Map<UUID, Integer> chatCounts = getAiChatCounts(projectIds);
+
+        List<ProjectResponse> items = projectList.stream()
+                .map(project -> toProjectResponse(project,
+                        apiCounts.getOrDefault(project.getId(), 0),
+                        tableCounts.getOrDefault(project.getId(), 0),
+                        chatCounts.getOrDefault(project.getId(), 0)))
                 .collect(Collectors.toList());
 
         return PageResponse.<ProjectResponse>builder()
@@ -543,6 +553,80 @@ public class ProjectService {
         }
     }
 
+    private Map<UUID, Integer> getApiCounts(List<UUID> projectIds) {
+        if (projectIds == null || projectIds.isEmpty()) {
+            return Map.of();
+        }
+        String inSql = projectIds.stream().map(id -> "?").collect(Collectors.joining(","));
+        String sql = "SELECT c.project_id, COUNT(r.id) as cnt FROM api_requests r " +
+                "JOIN api_collections c ON r.collection_id = c.id " +
+                "WHERE c.project_id IN (" + inSql + ") " +
+                "GROUP BY c.project_id";
+        
+        Object[] args = projectIds.stream().map(UUID::toString).toArray();
+        Map<UUID, Integer> result = new HashMap<>();
+        try {
+            jdbcTemplate.query(sql, rs -> {
+                String projectIdStr = rs.getString("project_id");
+                if (projectIdStr != null) {
+                    result.put(UUID.fromString(projectIdStr), rs.getInt("cnt"));
+                }
+            }, args);
+        } catch (Exception e) {
+            // log/ignore
+        }
+        return result;
+    }
+
+    private Map<UUID, Integer> getDatabaseTableCounts(List<UUID> projectIds) {
+        if (projectIds == null || projectIds.isEmpty()) {
+            return Map.of();
+        }
+        String inSql = projectIds.stream().map(id -> "?").collect(Collectors.joining(","));
+        String sql = "SELECT s.project_id, COUNT(t.id) as cnt FROM database_tables t " +
+                "JOIN database_schemas s ON t.schema_id = s.id " +
+                "WHERE s.project_id IN (" + inSql + ") " +
+                "GROUP BY s.project_id";
+        
+        Object[] args = projectIds.stream().map(UUID::toString).toArray();
+        Map<UUID, Integer> result = new HashMap<>();
+        try {
+            jdbcTemplate.query(sql, rs -> {
+                String projectIdStr = rs.getString("project_id");
+                if (projectIdStr != null) {
+                    result.put(UUID.fromString(projectIdStr), rs.getInt("cnt"));
+                }
+            }, args);
+        } catch (Exception e) {
+            // log/ignore
+        }
+        return result;
+    }
+
+    private Map<UUID, Integer> getAiChatCounts(List<UUID> projectIds) {
+        if (projectIds == null || projectIds.isEmpty()) {
+            return Map.of();
+        }
+        String inSql = projectIds.stream().map(id -> "?").collect(Collectors.joining(","));
+        String sql = "SELECT c.project_id, COUNT(c.id) as cnt FROM ai_conversations c " +
+                "WHERE c.project_id IN (" + inSql + ") " +
+                "GROUP BY c.project_id";
+        
+        Object[] args = projectIds.stream().map(UUID::toString).toArray();
+        Map<UUID, Integer> result = new HashMap<>();
+        try {
+            jdbcTemplate.query(sql, rs -> {
+                String projectIdStr = rs.getString("project_id");
+                if (projectIdStr != null) {
+                    result.put(UUID.fromString(projectIdStr), rs.getInt("cnt"));
+                }
+            }, args);
+        } catch (Exception e) {
+            // log/ignore
+        }
+        return result;
+    }
+
     private List<String> getTags(String type) {
         if (type == null || type.isBlank()) {
             return List.of("API");
@@ -551,6 +635,13 @@ public class ProjectService {
     }
 
     private ProjectResponse toProjectResponse(Project project) {
+        return toProjectResponse(project, 
+                getApiCount(project.getId()), 
+                getDatabaseTableCount(project.getId()), 
+                getAiChatCount(project.getId()));
+    }
+
+    private ProjectResponse toProjectResponse(Project project, int apiCount, int databaseTableCount, int aiChatCount) {
         return ProjectResponse.builder()
                 .id(project.getId())
                 .name(project.getName())
@@ -559,9 +650,9 @@ public class ProjectService {
                 .status(project.getStatus())
                 .tags(getTags(project.getType()))
                 .tech(getTags(project.getType()))
-                .apiCount(getApiCount(project.getId()))
-                .databaseTableCount(getDatabaseTableCount(project.getId()))
-                .aiChatCount(getAiChatCount(project.getId()))
+                .apiCount(apiCount)
+                .databaseTableCount(databaseTableCount)
+                .aiChatCount(aiChatCount)
                 .color(project.getColor())
                 .ownerId(project.getOwnerId())
                 .createdAt(project.getCreatedAt())

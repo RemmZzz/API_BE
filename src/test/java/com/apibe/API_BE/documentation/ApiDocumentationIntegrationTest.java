@@ -59,7 +59,17 @@ public class ApiDocumentationIntegrationTest {
     @MockitoBean private UserSessionRepository userSessionRepository;
     @MockitoBean private UserSettingRepository userSettingRepository;
     @MockitoBean private WorkspaceRepository workspaceRepository;
+    @MockitoBean private Oauth2ExchangeCodeRepository oauth2ExchangeCodeRepository;
     @MockitoBean private JdbcTemplate jdbcTemplate;
+
+    @MockitoBean private com.apibe.API_BE.module.mockserver.repository.MockEndpointRepository mockEndpointRepository;
+    @MockitoBean private com.apibe.API_BE.module.subscription.repository.SubscriptionPlanRepository subscriptionPlanRepository;
+    @MockitoBean private com.apibe.API_BE.module.subscription.repository.SubscriptionRepository subscriptionRepository;
+    @MockitoBean private com.apibe.API_BE.module.payment.repository.PaymentRepository paymentRepository;
+    @MockitoBean private com.apibe.API_BE.module.payment.repository.PaymentEventRepository paymentEventRepository;
+
+    @MockitoBean private com.apibe.API_BE.module.workspace.repository.AiConversationRepository aiConversationRepository;
+    @MockitoBean private com.apibe.API_BE.module.workspace.repository.AiMessageRepository aiMessageRepository;
 
     @MockitoBean private DatabaseSchemaRepository databaseSchemaRepository;
     @MockitoBean private DatabaseTableRepository databaseTableRepository;

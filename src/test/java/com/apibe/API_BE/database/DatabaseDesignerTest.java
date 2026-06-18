@@ -13,6 +13,7 @@ import com.apibe.API_BE.module.user.repository.UserSessionRepository;
 import com.apibe.API_BE.module.user.repository.UserSettingRepository;
 import com.apibe.API_BE.module.user.repository.OtpVerificationRepository;
 import com.apibe.API_BE.module.user.repository.PasswordResetTokenRepository;
+import com.apibe.API_BE.module.user.repository.Oauth2ExchangeCodeRepository;
 import com.apibe.API_BE.module.admin.repository.*;
 import com.apibe.API_BE.module.collection.repository.*;
 import com.apibe.API_BE.module.environment.repository.*;
@@ -35,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -76,7 +78,17 @@ public class DatabaseDesignerTest {
     @MockitoBean private UserSessionRepository userSessionRepository;
     @MockitoBean private UserSettingRepository userSettingRepository;
     @MockitoBean private WorkspaceRepository workspaceRepository;
+    @MockitoBean private Oauth2ExchangeCodeRepository oauth2ExchangeCodeRepository;
     @MockitoBean private JdbcTemplate jdbcTemplate;
+
+    @MockitoBean private com.apibe.API_BE.module.mockserver.repository.MockEndpointRepository mockEndpointRepository;
+    @MockitoBean private com.apibe.API_BE.module.subscription.repository.SubscriptionPlanRepository subscriptionPlanRepository;
+    @MockitoBean private com.apibe.API_BE.module.subscription.repository.SubscriptionRepository subscriptionRepository;
+    @MockitoBean private com.apibe.API_BE.module.payment.repository.PaymentRepository paymentRepository;
+    @MockitoBean private com.apibe.API_BE.module.payment.repository.PaymentEventRepository paymentEventRepository;
+
+    @MockitoBean private com.apibe.API_BE.module.workspace.repository.AiConversationRepository aiConversationRepository;
+    @MockitoBean private com.apibe.API_BE.module.workspace.repository.AiMessageRepository aiMessageRepository;
 
     @MockitoBean private DatabaseSchemaRepository databaseSchemaRepository;
     @MockitoBean private DatabaseTableRepository databaseTableRepository;
@@ -139,7 +151,7 @@ public class DatabaseDesignerTest {
     @Test
     void testGetSchema() throws Exception {
         Mockito.when(databaseTableRepository.findBySchemaId(schemaId)).thenReturn(Collections.singletonList(table));
-        Mockito.when(databaseColumnRepository.findByTableId(tableId)).thenReturn(Collections.singletonList(column));
+        Mockito.when(databaseColumnRepository.findByTableIdIn(anyList())).thenReturn(Collections.singletonList(column));
         Mockito.when(databaseRelationshipRepository.findBySchemaId(schemaId)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/projects/{projectId}/database-schema", projectId))

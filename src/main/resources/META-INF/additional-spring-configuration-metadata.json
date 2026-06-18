@@ -1,0 +1,52 @@
+{
+  "groups": [
+    {
+      "name": "gemini",
+      "type": "com.apibe.API_BE.global.config.GeminiProperties",
+      "sourceType": "com.apibe.API_BE.global.config.GeminiProperties"
+    },
+    {
+      "name": "sepay",
+      "type": "com.apibe.API_BE.global.config.SePayProperties",
+      "sourceType": "com.apibe.API_BE.global.config.SePayProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "gemini.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.apibe.API_BE.global.config.GeminiProperties",
+      "description": "API Key for Gemini Service."
+    },
+    {
+      "name": "gemini.model",
+      "type": "java.lang.String",
+      "sourceType": "com.apibe.API_BE.global.config.GeminiProperties",
+      "description": "Model name for Gemini Service (e.g., gemini-1.5-flash)."
+    },
+    {
+      "name": "sepay.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.apibe.API_BE.global.config.SePayProperties",
+      "description": "API Key of SePay to authenticate incoming webhooks."
+    },
+    {
+      "name": "sepay.bank-id",
+      "type": "java.lang.String",
+      "sourceType": "com.apibe.API_BE.global.config.SePayProperties",
+      "description": "Bank short name or ID (e.g., vietcombank)."
+    },
+    {
+      "name": "sepay.account-number",
+      "type": "java.lang.String",
+      "sourceType": "com.apibe.API_BE.global.config.SePayProperties",
+      "description": "Account number of the merchant bank account."
+    },
+    {
+      "name": "sepay.account-name",
+      "type": "java.lang.String",
+      "sourceType": "com.apibe.API_BE.global.config.SePayProperties",
+      "description": "Account name of the merchant bank account."
+    }
+  ]
+}

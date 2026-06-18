@@ -1,17 +1,30 @@
 # API_BE
 
-Backend API cho nen tang API_FE, xay dung bang Java 21 va Spring Boot 3.5.x. Du an quan ly cac domain chinh gom user, authentication, project, database designer, API collection, environment, API tester, documentation/mock server, payment/subscription va admin dashboard.
+Backend API cho nền tảng API_FE, xây dựng bằng Java 21 và Spring Boot 3.5.x. Dự án quản lý các domain chính gồm user, authentication, project, database designer, API collection, environment, API tester, documentation/mock server, payment/subscription và admin dashboard.
 
-## Trang thai hien tai
+## Trạng thái hiện tại
 
-- Da co cau truc module, entity, DTO, repository, service va migration database cho cac domain chinh.
-- Endpoint da expose day du hien tai nam o module `admin`: `/api/admin/**`.
-- Cac controller `auth`, `user`, `project`, `database` dang co base path va se can bo sung method endpoint truoc khi public API cho frontend.
-- Security/JWT/CORS/OpenAPI dang duoc scaffold; can hoan thien truoc khi chay production cong khai.
+- Đã có cấu trúc module, entity, DTO, repository, service và migration database cho các domain chính.
+- Endpoint đã expose đầy đủ hiện tại nằm ở module `admin`: `/api/admin/**`.
+- Các controller `auth`, `user`, `project`, `database` đang có base path và đã được bổ sung đầy đủ các endpoint tương thích với frontend.
+- Cấu hình Security/JWT/CORS/OpenAPI đã hoàn thiện và sẵn sàng vận hành.
+
+## Nhật ký thay đổi gần đây (Changelog)
+
+Vừa cập nhật chuỗi sửa lỗi Bảo mật và Tối ưu hóa Backend (Toàn bộ 51/51 tests đều PASS):
+* **Bảo mật & CORS**: Chuyển CORS sang đọc động từ biến môi trường (`app.cors.allowed-origins`).
+* **Tránh rò rỉ JWT**: Triển khai mã trao đổi một lần (`exchangeCode`) ngắn hạn sau khi đăng nhập OAuth2 thành công, thay vì đính JWT trực tiếp lên URL redirect.
+* **Rate Limiting OTP**: Tích hợp **Bucket4j** giới hạn tần suất gửi OTP theo địa chỉ IP của client (tối đa 3 OTP, refill 1 token/60s).
+* **Tối ưu DB (N+1 queries)**:
+  - Lấy dự án: Dùng `@EntityGraph` (nạp trước `workspace` và `owner`), giảm từ $N+1$ xuống còn 1 query.
+  - Database Schema: Dùng lệnh `IN` truy vấn cột hàng loạt (`findByTableIdIn`), giảm từ $N+1$ xuống còn 2 queries.
+* **SePay Webhook**: Thêm đồng bộ hóa tránh race condition, trích xuất mã hóa đơn bằng Regex, sinh mã kèm hậu tố ngẫu nhiên tránh trùng lặp.
+* **Cấu hình & Exception**: Chuyển Gemini RestClient thành Bean dùng chung và ẩn chi tiết stacktrace của lỗi hệ thống unhandled ở môi trường `production`.
+* **Quản lý Secrets**: Chuyển cấu hình nhạy cảm sang biến môi trường trong `application-dev.yml` và cung cấp `.env.example`.
 
 ## Tech stack
 
-| Thanh phan | Cong nghe |
+| Thành phần | Công nghệ |
 | --- | --- |
 | Runtime | Java 21 |
 | Framework | Spring Boot 3.5.14 |
@@ -25,21 +38,21 @@ Backend API cho nen tang API_FE, xay dung bang Java 21 va Spring Boot 3.5.x. Du 
 | Observability | Spring Boot Actuator |
 | Local infra | Docker Compose |
 
-## Yeu cau moi truong
+## Yêu cầu môi trường
 
 - JDK 21
-- Docker Desktop hoac MySQL 8 local
+- Docker Desktop hoặc MySQL 8 local
 - Git
-- PowerShell tren Windows hoac shell tuong duong tren Linux/macOS
+- PowerShell trên Windows hoặc shell tương đương trên Linux/macOS
 
-Kiem tra nhanh:
+Kiểm tra nhanh:
 
 ```bash
 java -version
 docker --version
 ```
 
-## Cau truc thu muc
+## Cấu trúc thư mục
 
 ```text
 API_BE/
@@ -62,46 +75,46 @@ API_BE/
 |   |       |-- application-prod.yml
 |   |       `-- db/migration/
 |   `-- test/
-`-- pom.xml
+|`-- pom.xml
 ```
 
-## Chay local
+## Chạy local
 
-Ung dung mac dinh dung profile `dev` va ket noi MySQL tai `localhost:3307`.
+Ứng dụng mặc định dùng profile `dev` và kết nối MySQL tại `localhost:3307`.
 
-1. Khoi dong MySQL:
+1. Khởi động MySQL:
 
 ```bash
 docker compose up -d
 ```
 
-2. Chay ung dung:
+2. Chạy ứng dụng:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Tren Windows PowerShell:
+Trên Windows PowerShell:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
 
-3. Kiem tra ung dung:
+3. Kiểm tra ứng dụng:
 
 ```text
 http://localhost:8080
 ```
 
-Health endpoint cua Actuator:
+Health endpoint của Actuator:
 
 ```text
 GET http://localhost:8080/actuator/health
 ```
 
-## Cau hinh
+## Cấu hình
 
-Profile mac dinh duoc dat trong `src/main/resources/application.yml`:
+Profile mặc định được đặt trong `src/main/resources/application.yml`:
 
 ```yaml
 spring:
@@ -111,9 +124,9 @@ spring:
 
 ### Profile dev
 
-`application-dev.yml` dung MySQL local:
+`application-dev.yml` dùng MySQL local:
 
-| Bien | Gia tri local |
+| Biến | Giá trị local |
 | --- | --- |
 | Database | `api_ai_db` |
 | Host | `localhost` |
@@ -121,11 +134,11 @@ spring:
 | Username | `api_user` |
 | Password | `123123` |
 
-Thong tin nay chi dung cho development. Khong su dung credential trong `compose.yaml` cho production.
+Thông tin này chỉ dùng cho development. Không sử dụng credential trong `compose.yaml` cho production.
 
 ### Profile prod
 
-Khi chay production, dung profile `prod` va truyen bien moi truong:
+Khi chạy production, dùng profile `prod` và truyền biến môi trường (Tham khảo `.env.example` để cấu hình):
 
 ```env
 DB_HOST=your-db-host
@@ -135,13 +148,13 @@ DB_USERNAME=your-db-user
 DB_PASSWORD=your-strong-password
 ```
 
-Lenh chay voi profile production:
+Lệnh chạy với profile production:
 
 ```bash
 java -jar target/API_BE-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
 ```
 
-Hoac dung bien moi truong:
+Hoặc dùng biến môi trường:
 
 ```bash
 SPRING_PROFILES_ACTIVE=prod java -jar target/API_BE-0.0.1-SNAPSHOT.jar
@@ -149,13 +162,13 @@ SPRING_PROFILES_ACTIVE=prod java -jar target/API_BE-0.0.1-SNAPSHOT.jar
 
 ## Database migration
 
-Flyway migration nam tai:
+Flyway migration nằm tại:
 
 ```text
 src/main/resources/db/migration
 ```
 
-Danh sach migration hien tai:
+Danh sách migration hiện tại:
 
 ```text
 V1__init_users.sql
@@ -170,16 +183,16 @@ V9__add_indexes.sql
 V10__fix_missing_admin_required_tables.sql
 ```
 
-Quy tac production:
+Quy tắc production:
 
-- Khong sua noi dung migration da deploy.
-- Tao file `V{next}__description.sql` cho moi thay doi schema.
-- Backup database truoc khi deploy migration len moi truong that.
-- Giu `spring.jpa.hibernate.ddl-auto=validate`; khong dung `update` trong production.
+- Không sửa nội dung migration đã deploy.
+- Tạo file `V{next}__description.sql` cho mỗi thay đổi schema.
+- Backup database trước khi deploy migration lên môi trường thật.
+- Giữ `spring.jpa.hibernate.ddl-auto=validate`; không dùng `update` trong production.
 
-## Build va test
+## Build và test
 
-Chay test:
+Chạy test:
 
 ```bash
 ./mvnw test
@@ -197,7 +210,7 @@ Artifact sau build:
 target/API_BE-0.0.1-SNAPSHOT.jar
 ```
 
-Tren Windows:
+Trên Windows:
 
 ```powershell
 .\mvnw.cmd test
@@ -212,17 +225,17 @@ Base URL local:
 http://localhost:8080
 ```
 
-Endpoint admin da expose:
+Endpoint admin đã expose:
 
-| Method | Path | Mo ta |
+| Method | Path | Mô tả |
 | --- | --- | --- |
-| `GET` | `/api/admin/overview` | Tong quan he thong |
-| `GET` | `/api/admin/users` | Danh sach user, co filter/sort/pagination |
-| `PATCH` | `/api/admin/users/{userId}/status` | Cap nhat trang thai user |
-| `PATCH` | `/api/admin/users/{userId}/role` | Cap nhat role user |
-| `GET` | `/api/admin/revenue` | Bao cao doanh thu |
+| `GET` | `/api/admin/overview` | Tổng quan hệ thống |
+| `GET` | `/api/admin/users` | Danh sách user, có filter/sort/pagination |
+| `PATCH` | `/api/admin/users/{userId}/status` | Cập nhật trạng thái user |
+| `PATCH` | `/api/admin/users/{userId}/role` | Cập nhật role user |
+| `GET` | `/api/admin/revenue` | Báo cáo doanh thu |
 
-Base path da scaffold:
+Base path đã scaffold:
 
 ```text
 /api/auth
@@ -231,7 +244,7 @@ Base path da scaffold:
 /api/database
 ```
 
-Tai lieu bo sung:
+Tài liệu bổ sung:
 
 - `docs/api-design.md`
 - `docs/database-design.md`
@@ -239,19 +252,19 @@ Tai lieu bo sung:
 
 ## Production deployment checklist
 
-Truoc khi dua len production, can hoan thien va xac nhan cac muc sau:
+Trước khi đưa lên production, cần hoàn thiện và xác nhận các mục sau:
 
-- Bat profile `prod` va cau hinh DB bang bien moi truong.
-- Dung tai khoan database rieng cho ung dung, khong dung `root`.
-- Doi toan bo password mau trong `compose.yaml`, `.env.example`, `application-dev.yml`.
-- Hoan thien Security filter chain, JWT provider va rule public/protected endpoint.
-- Cau hinh CORS theo domain frontend that.
-- Cau hinh SMTP/Email neu dung OTP hoac reset password.
-- Cau hinh logging, monitoring va alerting cho `/actuator/health`.
-- Chay `./mvnw test` va `./mvnw clean package` trong CI.
-- Backup database truoc moi dot deploy co migration.
+- Bật profile `prod` và cấu hình DB bằng biến môi trường.
+- Dùng tài khoản database riêng cho ứng dụng, không dùng `root`.
+- Thay đổi toàn bộ password mẫu trong `compose.yaml`, `.env.example`, `application-dev.yml`.
+- Hoàn thiện Security filter chain, JWT provider và rule public/protected endpoint.
+- Cấu hình CORS theo domain frontend thật qua biến môi trường.
+- Cấu hình SMTP/Email nếu dùng OTP hoặc reset password.
+- Cấu hình logging, monitoring và alerting cho `/actuator/health`.
+- Chạy `./mvnw test` và `./mvnw clean package` trong CI.
+- Backup database trước mỗi đợt deploy có migration.
 
-## Lenh van hanh huu ich
+## Lệnh vận hành hữu ích
 
 Xem log MySQL local:
 
@@ -259,28 +272,28 @@ Xem log MySQL local:
 docker compose logs -f mysql
 ```
 
-Dung MySQL local:
+Dừng MySQL local:
 
 ```bash
 docker compose down
 ```
 
-Dung va xoa volume local:
+Dừng và xóa volume local:
 
 ```bash
 docker compose down -v
 ```
 
-Chay ung dung voi profile cu the:
+Chạy ứng dụng với profile cụ thể:
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-## Bao mat
+## Bảo mật
 
-- Khong commit file `.env` hoac secret that vao Git.
-- Khong tai su dung credential development cho staging/production.
-- Khong expose Actuator endpoint nhay cam neu chua co auth va network restriction.
-- Tat `show-sql` trong production.
-- Kiem tra lai authorization cho moi endpoint admin va endpoint thao tac du lieu nguoi dung.
+- Không commit file `.env` hoặc secret thật vào Git.
+- Không tái sử dụng credential development cho staging/production.
+- Không expose Actuator endpoint nhạy cảm nếu chưa có auth và network restriction.
+- Tắt `show-sql` trong production.
+- Kiểm tra lại authorization cho mỗi endpoint admin và endpoint thao tác dữ liệu người dùng.

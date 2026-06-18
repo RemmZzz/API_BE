@@ -61,5 +61,10 @@ public class AuthController {
         authService.resetPassword(request);
         return ApiResponse.success("Password reset successfully", null);
     }
+
+    @PostMapping("/oauth-exchange")
+    public ApiResponse<TokenResponse> oauthExchange(@Valid @RequestBody Oauth2ExchangeRequest request, HttpServletRequest servletRequest) {
+        return ApiResponse.success("Token exchange successful", authService.oauthExchange(request, servletRequest));
+    }
 }
 

@@ -7,3 +7,24 @@ spring:
 
   profiles:
     active: dev
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: "yyyy-MM-dd'T'HH:mm:ss"
+
+# Gemini Configuration
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: gemini-3.5-flash
+
+# SePay Configuration
+sepay:
+  api-key: ${SEPAY_API_KEY:sepay_mock_key}
+  bank-id: ${SEPAY_BANK_ID:vietcombank}
+  account-number: ${SEPAY_ACCOUNT_NUMBER:1234567890}
+  account-name: ${SEPAY_ACCOUNT_NAME:CONG TY APIDMP}
+# App Custom Configuration
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}

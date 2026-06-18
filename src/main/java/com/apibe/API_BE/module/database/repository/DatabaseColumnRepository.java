@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface DatabaseColumnRepository extends JpaRepository<DatabaseColumn, UUID> {
     List<DatabaseColumn> findByTableId(UUID tableId);
+    List<DatabaseColumn> findByTableIdIn(List<UUID> tableIds);
 }

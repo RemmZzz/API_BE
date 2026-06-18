@@ -32,10 +32,23 @@ public class Payment {
     private String orderCode;
 
     @Column(name = "provider")
-    private String provider;
+    @Builder.Default
+    private String provider = "BANK_TRANSFER";
 
-    @Column(name = "plan_id")
-    private String planId;
+    @Column(name = "bank_name")
+    private String bankName;
+
+    @Column(name = "account_name")
+    private String accountName;
+
+    @Column(name = "account_number")
+    private String accountNumber;
+
+    @Column(name = "transfer_content")
+    private String transferContent;
+
+    @Column(name = "plan_id", columnDefinition = "CHAR(36)")
+    private UUID planId;
 
     @Column(name = "plan_name")
     private String planName;
@@ -47,11 +60,13 @@ public class Payment {
     private BigDecimal amount;
 
     @Column(name = "currency")
-    private String currency;
+    @Builder.Default
+    private String currency = "VND";
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private PaymentStatus status;
+    @Builder.Default
+    private PaymentStatus status = PaymentStatus.PENDING;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

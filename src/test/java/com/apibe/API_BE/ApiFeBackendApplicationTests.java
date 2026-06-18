@@ -35,6 +35,7 @@ import com.apibe.API_BE.module.user.repository.UserSessionRepository;
 import com.apibe.API_BE.module.user.repository.UserSettingRepository;
 import com.apibe.API_BE.module.workspace.repository.WorkspaceRepository;
 import com.apibe.API_BE.module.apitester.repository.ApiTestHistoryRepository;
+import com.apibe.API_BE.module.user.repository.Oauth2ExchangeCodeRepository;
 
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
@@ -133,6 +134,30 @@ class ApiFeBackendApplicationTests {
 
     @MockitoBean
     private WorkspaceRepository workspaceRepository;
+
+    @MockitoBean
+    private Oauth2ExchangeCodeRepository oauth2ExchangeCodeRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.mockserver.repository.MockEndpointRepository mockEndpointRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.subscription.repository.SubscriptionPlanRepository subscriptionPlanRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.subscription.repository.SubscriptionRepository subscriptionRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.payment.repository.PaymentRepository paymentRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.payment.repository.PaymentEventRepository paymentEventRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.workspace.repository.AiConversationRepository aiConversationRepository;
+
+    @MockitoBean
+    private com.apibe.API_BE.module.workspace.repository.AiMessageRepository aiMessageRepository;
 
     @MockitoBean
     private JdbcTemplate jdbcTemplate;

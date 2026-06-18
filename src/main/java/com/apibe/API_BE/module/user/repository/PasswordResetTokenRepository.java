@@ -10,5 +10,7 @@ import java.util.UUID;
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, UUID> {
 
     List<PasswordResetToken> findByUsedAtIsNullAndExpiresAtAfter(LocalDateTime now);
+
+    java.util.Optional<PasswordResetToken> findByTokenHashAndUsedAtIsNullAndExpiresAtAfter(String tokenHash, LocalDateTime now);
 }
 

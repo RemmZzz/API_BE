@@ -41,6 +41,7 @@ public class ApiTesterController {
     // ─────────────────────────────────────────────────────────────────────────
 
     @GetMapping("/api/projects/{projectId}/api-test-history")
+    @SuppressWarnings("null")
     public ApiResponse<PageResponse<ApiTestHistoryResponse>> getHistory(
             @PathVariable UUID projectId,
             @RequestParam(required = false) String method,

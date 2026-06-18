@@ -32,9 +32,15 @@ public class DatabaseSchemaService {
         DatabaseSchema schema = getOrCreateDefaultSchema(projectId);
 
         List<DatabaseTable> tables = databaseTableRepository.findBySchemaId(schema.getId());
+        List<UUID> tableIds = tables.stream().map(DatabaseTable::getId).collect(Collectors.toList());
+
+        List<DatabaseColumn> allColumns = databaseColumnRepository.findByTableIdIn(tableIds);
+        Map<UUID, List<DatabaseColumn>> columnsByTableId = allColumns.stream()
+                .collect(Collectors.groupingBy(DatabaseColumn::getTableId));
+
         List<DatabaseTableResponse> tableResponses = tables.stream()
                 .map(table -> {
-                    List<DatabaseColumn> columns = databaseColumnRepository.findByTableId(table.getId());
+                    List<DatabaseColumn> columns = columnsByTableId.getOrDefault(table.getId(), Collections.emptyList());
                     return databaseMapper.toTableResponse(table, columns);
                 })
                 .collect(Collectors.toList());

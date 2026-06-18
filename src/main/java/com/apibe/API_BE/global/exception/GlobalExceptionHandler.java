@@ -1,6 +1,8 @@
 package com.apibe.API_BE.global.exception;
 
 import com.apibe.API_BE.global.response.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
@@ -60,13 +63,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus().value()).body(response);
     }
 
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        log.error("Unhandled exception: ", ex);
+        
+        String detailMessage = "dev".equalsIgnoreCase(activeProfile) || "local".equalsIgnoreCase(activeProfile) 
+                ? ex.getMessage() 
+                : "An unexpected error occurred. Please contact system administrator.";
+
         ErrorResponse response = ErrorResponse.builder()
                 .success(false)
                 .message("Internal server error")
                 .errorCode(ErrorCode.INTERNAL_SERVER_ERROR.getCode())
-                .errors(List.of(ex.getMessage()))
+                .errors(List.of(detailMessage))
                 .timestamp(LocalDateTime.now())
                 .build();
 

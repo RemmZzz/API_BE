@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class CollectionService {
 
     private final ProjectRepository projectRepository;
@@ -211,9 +212,6 @@ public class CollectionService {
 
         UUID rootKey = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-        // Build folder tree
-        Map<UUID, CollectionFolder> folderMap = allFolders.stream()
-                .collect(Collectors.toMap(CollectionFolder::getId, f -> f));
         Map<UUID, List<CollectionFolder>> childrenMap = allFolders.stream()
                 .collect(Collectors.groupingBy(
                         f -> f.getParentFolderId() != null

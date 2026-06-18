@@ -22,5 +22,7 @@ public interface AuthService {
     void forgotPassword(ForgotPasswordRequest request);
 
     void resetPassword(ResetPasswordRequest request);
+
+    TokenResponse oauthExchange(Oauth2ExchangeRequest request, HttpServletRequest servletRequest);
 }
 

@@ -2,12 +2,15 @@ package com.apibe.API_BE.module.auth.security;
 
 import com.apibe.API_BE.global.enums.UserRole;
 import com.apibe.API_BE.global.enums.UserStatus;
-import com.apibe.API_BE.global.security.JwtTokenProvider;
+import com.apibe.API_BE.module.user.entity.Oauth2ExchangeCode;
+import com.apibe.API_BE.module.user.repository.Oauth2ExchangeCodeRepository;
 import com.apibe.API_BE.module.user.entity.User;
 import com.apibe.API_BE.module.user.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -21,10 +24,11 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final Oauth2ExchangeCodeRepository oauth2ExchangeCodeRepository;
 
     @Value("${app.frontend.oauth-success-url:http://localhost:5173/oauth-success}")
     private String oauthSuccessUrl;
@@ -50,8 +54,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                         .status(UserStatus.ACTIVE)
                         .build()));
 
+        // Sinh mã trao đổi ngắn hạn hết hạn sau 1 phút
+        String exchangeCode = UUID.randomUUID().toString();
+        oauth2ExchangeCodeRepository.save(Oauth2ExchangeCode.builder()
+                .userId(user.getId())
+                .code(exchangeCode)
+                .expiresAt(LocalDateTime.now().plusMinutes(1))
+                .build());
+
         String redirectUrl = UriComponentsBuilder.fromUriString(oauthSuccessUrl)
-                .queryParam("token", jwtTokenProvider.generateAccessToken(user))
+                .queryParam("code", exchangeCode)
                 .build()
                 .toUriString();
         response.sendRedirect(redirectUrl);
